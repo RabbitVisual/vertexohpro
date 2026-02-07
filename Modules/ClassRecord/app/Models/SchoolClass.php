@@ -9,6 +9,8 @@ class SchoolClass extends Model
 {
     use HasFactory;
 
+    protected $table = 'school_classes';
+    protected $fillable = ['name', 'grade', 'year'];
     protected $fillable = ['name', 'is_multigrade', 'grades_covered'];
 
     protected $casts = [

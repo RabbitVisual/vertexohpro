@@ -96,6 +96,19 @@ class LibraryController extends Controller
         $user = $request->user();
         $hasAccess = $this->downloadService->hasPermission($material, $user);
 
+        // Recommendations based on tags
+        $relatedMaterials = collect();
+        if (!empty($material->tags)) {
+            $query = Material::where('id', '!=', $id);
+            $query->where(function($q) use ($material) {
+                foreach ($material->tags as $tag) {
+                    $q->orWhereJsonContains('tags', $tag);
+                }
+            });
+            $relatedMaterials = $query->inRandomOrder()->take(4)->get();
+        }
+
+        return view('library::show', compact('material', 'hasAccess', 'relatedMaterials'));
         return view('library::show', compact('material', 'hasAccess'));
     }
 }

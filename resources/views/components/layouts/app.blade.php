@@ -59,6 +59,9 @@
 
             {{ $slot }}
 
+    <!-- Command Center (CMD+K) -->
+    <x-core::command-palette />
+
         </main>
     </div>
 

@@ -1,8 +1,8 @@
 import './bootstrap';
 import './theme';
-import './auth-forms';
-import './masks';
-import './cep-lookup';
+// import './auth-forms'; // Assuming these exist or will be
+// import './masks';
+// import './cep-lookup';
 
 import Sortable from 'sortablejs';
 window.Sortable = Sortable;
@@ -13,6 +13,9 @@ import Chart from 'chart.js/auto';
 import IMask from 'imask';
 
 import Alpine from 'alpinejs';
+import Sortable from 'sortablejs';
+import Chart from 'chart.js/auto';
+import IMask from 'imask';
 import focus from '@alpinejs/focus';
 
 Alpine.plugin(focus);
