@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('material_purchases', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('material_id')->constrained('materials')->onDelete('cascade');
+            $table->foreignId('library_resource_id')->constrained('library_resources')->onDelete('cascade');
             $table->decimal('price_paid', 10, 2);
             $table->timestamp('purchased_at')->useCurrent();
+            $table->string('transaction_id')->nullable();
+            $table->string('status')->default('completed');
             $table->timestamps();
         });
     }

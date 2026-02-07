@@ -19,6 +19,10 @@ return new class extends Migration
             $table->string('file_path');
             $table->json('tags')->nullable();
             $table->decimal('price', 8, 2)->default(0.00);
+            $table->string('version')->default('1.0');
+            $table->timestamp('free_until')->nullable();
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->text('rejection_reason')->nullable();
             $table->timestamps();
         });
     }

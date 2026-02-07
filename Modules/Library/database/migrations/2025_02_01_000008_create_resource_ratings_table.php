@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('material_ratings', function (Blueprint $table) {
+        Schema::create('resource_ratings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('material_id')->constrained('materials')->onDelete('cascade');
+            $table->foreignId('library_resource_id')->constrained('library_resources')->onDelete('cascade');
             $table->tinyInteger('rating')->unsigned(); // 1-5
             $table->text('comment')->nullable();
             $table->timestamps();
 
-            // Ensure one rating per user per material
-            $table->unique(['user_id', 'material_id']);
+            // Ensure one rating per user per resource
+            $table->unique(['user_id', 'library_resource_id']);
         });
     }
 
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('material_ratings');
+        Schema::dropIfExists('resource_ratings');
     }
 };
