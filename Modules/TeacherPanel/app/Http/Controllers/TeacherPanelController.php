@@ -26,7 +26,8 @@ class TeacherPanelController extends Controller
         $widgets = $settings ? $settings->widget_order : [
             'resumo-frequencia',
             'agenda-aulas',
-            'atalhos-bncc'
+            'atalhos-bncc',
+            'marketplace-trends'
         ];
 
         // Ensure widgets is an array if for some reason it's null in DB
@@ -34,7 +35,8 @@ class TeacherPanelController extends Controller
              $widgets = [
                 'resumo-frequencia',
                 'agenda-aulas',
-                'atalhos-bncc'
+                'atalhos-bncc',
+                'marketplace-trends'
             ];
         }
 
@@ -46,7 +48,7 @@ class TeacherPanelController extends Controller
      */
     public function updateSettings(Request $request)
     {
-        $allowedWidgets = ['resumo-frequencia', 'agenda-aulas', 'atalhos-bncc'];
+        $allowedWidgets = ['resumo-frequencia', 'agenda-aulas', 'atalhos-bncc', 'marketplace-trends'];
 
         $request->validate([
             'widget_order' => 'required|array',
