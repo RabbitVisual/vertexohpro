@@ -1,4 +1,4 @@
-<x-layouts.app :title="$title ?? 'TeacherPanel Module'">
+<x-core::layouts.master :title="$title ?? 'Teacher Panel Module'">
     {{ $slot }}
 
     @push('head')
@@ -19,4 +19,4 @@
         }
     </script>
     @endpush
-</x-layouts.app>
+</x-core::layouts.master>

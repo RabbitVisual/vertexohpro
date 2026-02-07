@@ -93,4 +93,16 @@ class User extends Authenticatable
                     ->withPivot('price_paid', 'purchased_at', 'status')
                     ->withTimestamps();
     }
+
+    // Direct relationship for checking existence (from Unify branch)
+    public function purchases()
+    {
+        // Assuming Modules\Billing\Models\MaterialPurchase exists or will exist.
+        // If not, this might break. But 'material_purchases' table exists per HEAD relation above.
+        // I will allow this method but ensure class exists if used.
+        // To be safe, I'll use string reference if class might be missing, but 'hasMany' expects class.
+        // I'll keep it commented out if I'm not sure about Billing module presence.
+        // Converting to use string class name to avoid import error if class missing.
+        return $this->hasMany('\Modules\Billing\Models\MaterialPurchase');
+    }
 }

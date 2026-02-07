@@ -32,9 +32,9 @@ class BnccController extends Controller
         $cacheKey = 'bncc_search_' . md5($query);
 
         $skills = Cache::remember($cacheKey, 60 * 24, function () use ($query) { // Cache for 24 hours
-            return DB::table('bncc_skills')
-                ->where('code', 'like', "%{$query}%")
-                ->orWhere('description', 'like', "%{$query}%")
+            return DB::table('bncc_habilidades')
+                ->where('codigo', 'like', "%{$query}%") // Migration uses 'codigo' not 'code'
+                ->orWhere('descricao', 'like', "%{$query}%")
                 ->limit(20)
                 ->get();
         });
