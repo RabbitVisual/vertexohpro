@@ -10,6 +10,8 @@ namespace Modules\ClassRecord\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\ClassRecord\Models\Student;
+use Modules\ClassRecord\Jobs\SendReportCardJob;
 
 class ClassRecordController extends Controller
 {
@@ -59,4 +61,14 @@ class ClassRecordController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy($id) {}
+
+    /**
+     * Send report card via email.
+     */
+    public function emailReportCard(Student $student)
+    {
+        SendReportCardJob::dispatch($student);
+
+        return back()->with('success', 'Boletim enviado para processamento!');
+    }
 }

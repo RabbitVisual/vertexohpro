@@ -10,6 +10,9 @@ namespace Modules\TeacherPanel\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\TeacherPanel\Models\TeacherPanelSetting;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class TeacherPanelController extends Controller
 {
@@ -18,7 +21,53 @@ class TeacherPanelController extends Controller
      */
     public function index()
     {
-        return view('teacherpanel::index');
+        $settings = TeacherPanelSetting::where('user_id', Auth::id())->first();
+
+        $defaultWidgets = [
+            'resumo-frequencia',
+            'agenda-aulas',
+            'atalhos-bncc',
+            'marketplace-trends',
+            'alunos-em-risco'
+        ];
+
+        $widgets = $settings ? $settings->widget_order : $defaultWidgets;
+
+        // Ensure widgets is an array if for some reason it's null in DB
+        if (!$widgets) {
+             $widgets = $defaultWidgets;
+        }
+
+        return view('teacherpanel::index', compact('widgets'));
+    }
+
+    /**
+     * Update the widget settings.
+     */
+    public function updateSettings(Request $request)
+    {
+        $allowedWidgets = [
+            'resumo-frequencia',
+            'agenda-aulas',
+            'atalhos-bncc',
+            'marketplace-trends',
+            'alunos-em-risco'
+        ];
+
+        $request->validate([
+            'widget_order' => 'required|array',
+            'widget_order.*' => ['required', 'string', Rule::in($allowedWidgets)],
+        ]);
+
+        $settings = TeacherPanelSetting::updateOrCreate(
+            ['user_id' => Auth::id()],
+            ['widget_order' => $request->widget_order]
+        );
+
+        return response()->json([
+            'message' => 'Configurações salvas com sucesso!',
+            'settings' => $settings
+        ]);
     }
 
     /**
