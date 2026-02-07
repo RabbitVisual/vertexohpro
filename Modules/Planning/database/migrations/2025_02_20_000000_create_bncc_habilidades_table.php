@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('bncc_habilidades', function (Blueprint $table) {
             $table->id();
-            $table->string('codigo')->index();
+            $table->string('codigo')->unique()->index();
             $table->text('descricao');
-            $table->json('objetos_conhecimento')->nullable();
-            $table->string('ano_faixa');
-            $table->string('componente_curricular');
+            $table->string('componente'); // Matemática, Língua Portuguesa
+            $table->string('ano_faixa'); // 1º Ano, EF15
+            $table->string('unidade_tematica')->nullable();
+            $table->string('objeto_conhecimento')->nullable();
             $table->timestamps();
         });
     }
