@@ -2,13 +2,13 @@
 
 return [
     'modules' => [
-        'core' => ['icon' => 'house', 'label' => 'Dashboard'],
-        'admin' => ['icon' => 'user-shield', 'label' => 'Admin'],
-        'teacherpanel' => ['icon' => 'chalkboard-teacher', 'label' => 'Teacher Panel'],
-        'planning' => ['icon' => 'calendar-lines-pen', 'label' => 'Planning'],
-        'classrecord' => ['icon' => 'book-user', 'label' => 'Class Record'],
-        'library' => ['icon' => 'books', 'label' => 'Library'],
-        'billing' => ['icon' => 'credit-card', 'label' => 'Billing'],
-        'support' => ['icon' => 'headset', 'label' => 'Support'],
+        'core' => ['icon' => 'house', 'label' => 'Dashboard', 'roles' => ['*']],
+        'admin' => ['icon' => 'user-shield', 'label' => 'Admin', 'roles' => ['admin']],
+        'teacherpanel' => ['icon' => 'chalkboard-teacher', 'label' => 'Teacher Panel', 'roles' => ['teacher']],
+        'planning' => ['icon' => 'calendar-lines-pen', 'label' => 'Planning', 'roles' => ['teacher']],
+        'classrecord' => ['icon' => 'book-user', 'label' => 'Class Record', 'roles' => ['teacher']],
+        'library' => ['icon' => 'books', 'label' => 'Library', 'roles' => ['teacher', 'admin']],
+        'billing' => ['icon' => 'credit-card', 'label' => 'Billing', 'roles' => ['teacher']],
+        'support' => ['icon' => 'headset', 'label' => 'Support', 'roles' => ['teacher']],
     ],
 ];

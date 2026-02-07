@@ -6,8 +6,19 @@
     <nav class="flex-1 overflow-y-auto py-4 px-2 space-y-1">
         @foreach(config('icons.modules', []) as $module => $config)
             @php
+                $roles = $config['roles'] ?? ['*'];
+                $user = auth()->user();
+
+                // Skip if user doesn't have required roles (unless '*' is present or no user logged in - though sidebar usually requires auth)
+                if ($user && !in_array('*', $roles) && !$user->hasAnyRole($roles)) {
+                    continue;
+                }
+
                 $routeName = $module . '.index';
-                $isActive = request()->routeIs($module . '.*');
+                // Some modules might have specific dashboard routes
+                if ($module === 'admin') $routeName = 'admin.dashboard'; // Example override if needed, but sticking to index for now
+
+                $isActive = request()->routeIs($module . '.*') || request()->is($module . '*');
                 $icon = $config['icon'] ?? 'circle-question'; // Fallback
                 $label = $config['label'] ?? ucfirst($module); // Fallback
             @endphp
@@ -21,6 +32,15 @@
     </nav>
 
     <div class="border-t border-slate-800 p-4">
+        <div class="flex items-center mb-4 px-3">
+             <div class="flex-shrink-0">
+                <img class="h-8 w-8 rounded-full" src="{{ auth()->user()?->photo_url ?? asset('assets/images/default-avatar.png') }}" alt="">
+             </div>
+             <div class="ml-3">
+                <p class="text-sm font-medium text-white">{{ auth()->user()?->first_name ?? 'Usuário' }}</p>
+                <p class="text-xs font-medium text-slate-400">{{ auth()->user()?->getRoleNames()->first() ?? 'Sem cargo' }}</p>
+             </div>
+        </div>
          <form method="POST" action="{{ Route::has('logout') ? route('logout') : '#' }}">
             @csrf
             <button type="submit" class="group flex w-full items-center px-3 py-2 text-sm font-medium text-slate-300 rounded-md hover:bg-slate-800 hover:text-white transition-colors duration-150 ease-in-out">
