@@ -38,65 +38,14 @@
         $sections = $plan->sections ?? [];
     @endphp
 
-    @if(isset($sections['objectives']))
-        <div class="section-title">Objetivos de Aprendizagem</div>
-        <div class="content-box">
-            @if(is_array($sections['objectives']))
-                <ul>
-                    @foreach($sections['objectives'] as $objective)
-                        <li>{{ $objective }}</li>
-                    @endforeach
-                </ul>
-            @else
-                {!! $sections['objectives'] !!}
-            @endif
-        </div>
-    @endif
-
-    @if(isset($sections['methodology']))
-        <div class="section-title">Metodologia</div>
-        <div class="content-box">
-            @if(is_array($sections['methodology']))
-                <ul>
-                    @foreach($sections['methodology'] as $method)
-                        <li>{{ $method }}</li>
-                    @endforeach
-                </ul>
-            @else
-                {!! $sections['methodology'] !!}
-            @endif
-        </div>
-    @endif
-
-    @if(isset($sections['resources']))
-        <div class="section-title">Recursos Didáticos</div>
-        <div class="content-box">
-            @if(is_array($sections['resources']))
-                <ul>
-                    @foreach($sections['resources'] as $resource)
-                        <li>{{ $resource }}</li>
-                    @endforeach
-                </ul>
-            @else
-                {!! $sections['resources'] !!}
-            @endif
-        </div>
-    @endif
-
-    @if(isset($sections['assessment']))
-        <div class="section-title">Avaliação</div>
-        <div class="content-box">
-            @if(is_array($sections['assessment']))
-                <ul>
-                    @foreach($sections['assessment'] as $assessment)
-                        <li>{{ $assessment }}</li>
-                    @endforeach
-                </ul>
-            @else
-                {!! $sections['assessment'] !!}
-            @endif
-        </div>
-    @endif
+    @foreach($sections as $section)
+        @if(isset($section['title']) && isset($section['content']))
+            <div class="section-title">{{ $section['title'] }}</div>
+            <div class="content-box">
+                {!! nl2br(e($section['content'])) !!}
+            </div>
+        @endif
+    @endforeach
 
     <div style="margin-top: 50px; text-align: center;">
         <p>_______________________________________________________</p>
