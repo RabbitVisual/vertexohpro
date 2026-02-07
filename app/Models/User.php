@@ -9,11 +9,12 @@ use Illuminate\Notifications\Notifiable;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasRoles;
+use Modules\Core\Traits\Auditable;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasRoles, SoftDeletes;
+    use HasFactory, Notifiable, HasRoles, SoftDeletes, Auditable;
 
     /**
      * The attributes that are mass assignable.
@@ -74,5 +75,24 @@ class User extends Authenticatable
     public function getPhotoUrlAttribute(): string
     {
         return $this->photo ? asset('storage/' . $this->photo) : asset('assets/images/default-avatar.png');
+    }
+
+    public function purchasedMaterials()
+    {
+        return $this->belongsToMany(
+            \Modules\Library\Models\LibraryResource::class,
+            'material_purchases',
+            'user_id',
+            'library_resource_id'
+        )
+        ->using(\Modules\Billing\Models\MaterialPurchase::class)
+        ->withPivot(['amount', 'transaction_id'])
+        ->withTimestamps();
+    }
+
+    // Direct relationship for checking existence
+    public function purchases()
+    {
+        return $this->hasMany(\Modules\Billing\Models\MaterialPurchase::class);
     }
 }
