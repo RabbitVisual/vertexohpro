@@ -6,9 +6,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasRoles;
+use Modules\Library\Models\Material;
 
 class User extends Authenticatable
 {
@@ -30,6 +30,7 @@ class User extends Authenticatable
         'photo',
         'membership',
         'status',
+        'theme',
         'password',
         'last_login_at',
         'last_login_ip',
@@ -74,5 +75,23 @@ class User extends Authenticatable
     public function getPhotoUrlAttribute(): string
     {
         return $this->photo ? asset('storage/' . $this->photo) : asset('assets/images/default-avatar.png');
+    }
+
+    /**
+     * Get the materials created by the user.
+     */
+    public function materials()
+    {
+        return $this->hasMany(Material::class, 'user_id');
+    }
+
+    /**
+     * Get the materials purchased by the user.
+     */
+    public function purchasedMaterials()
+    {
+        return $this->belongsToMany(Material::class, 'material_purchases', 'user_id', 'material_id')
+                    ->withPivot('price_paid', 'purchased_at', 'status')
+                    ->withTimestamps();
     }
 }
