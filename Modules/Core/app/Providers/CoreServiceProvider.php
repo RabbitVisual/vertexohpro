@@ -31,6 +31,7 @@ class CoreServiceProvider extends ServiceProvider
         Blade::component('core::components.toasts', 'toasts');
         Blade::component('core::components.card', 'card');
         Blade::component('core::components.button', 'button');
+        Blade::component('core::components.signature-pad', 'signature-pad');
     }
 
     /**
