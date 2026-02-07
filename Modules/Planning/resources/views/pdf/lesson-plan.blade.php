@@ -42,7 +42,7 @@
         @if(isset($section['title']) && isset($section['content']))
             <div class="section-title">{{ $section['title'] }}</div>
             <div class="content-box">
-                {!! nl2br(e($section['content'])) !!}
+                {!! $section['content'] !!}
             </div>
         @endif
     @endforeach
