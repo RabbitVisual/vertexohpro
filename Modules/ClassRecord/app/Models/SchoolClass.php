@@ -4,12 +4,13 @@ namespace Modules\ClassRecord\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Planning\Models\LessonPlan;
+use Modules\ClassRecord\Models\ClassDiary;
 
 class SchoolClass extends Model
 {
     use HasFactory;
 
-<<<<<<< HEAD
     protected $table = 'classes';
     protected $fillable = ['name', 'subject', 'year', 'user_id'];
 
@@ -26,12 +27,15 @@ class SchoolClass extends Model
     public function grades()
     {
         return $this->hasMany(Grade::class, 'class_id');
-=======
-    protected $fillable = ['user_id', 'name', 'year', 'subject'];
+    }
 
-    public function students()
+    public function lessonPlans()
     {
-        return $this->hasMany(Student::class);
->>>>>>> origin/jules/planning-module-init-11986219447505815665
+        return $this->hasMany(LessonPlan::class);
+    }
+
+    public function classDiaries()
+    {
+        return $this->hasMany(ClassDiary::class); // Assuming ClassDiary uses default conventions or we need to check FK
     }
 }

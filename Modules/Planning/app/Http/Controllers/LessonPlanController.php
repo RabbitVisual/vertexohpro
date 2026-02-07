@@ -3,56 +3,53 @@
 namespace Modules\Planning\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Modules\Planning\Models\LessonPlan;
-use Modules\Planning\Services\PdfExportService;
 use Illuminate\Http\Request;
+use Modules\Planning\Models\LessonPlan;
+use Modules\Planning\Services\LessonPlanService;
+use Modules\Planning\Services\PdfExportService;
 
 class LessonPlanController extends Controller
 {
-    protected $pdfService;
+    protected $lessonPlanService;
+    protected $pdfExportService;
 
-    public function __construct(PdfExportService $pdfService)
+    public function __construct(LessonPlanService $lessonPlanService, PdfExportService $pdfExportService)
     {
-        $this->pdfService = $pdfService;
+        $this->lessonPlanService = $lessonPlanService;
+        $this->pdfExportService = $pdfExportService;
     }
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        // Ideally return a view for the list, but keeping API behavior for now unless requested
-        // Prompt focus is on CREATE view.
         if (request()->wantsJson()) {
             return LessonPlan::all();
         }
-        return LessonPlan::all(); // Or view('planning::lesson-plans.index', ['plans' => ...])
+        $plans = LessonPlan::with('schoolClass')->latest()->paginate(10);
+        return view('planning::lesson-plans.index', compact('plans'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('planning::lesson-plans.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
+        // Merged validation rules
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'sections' => 'nullable|array',
-            'sections.*.title' => 'required|string',
-            'sections.*.content' => 'nullable|string',
+            'school_class_id' => 'nullable|exists:classes,id', // Resolved table name to 'classes' (HEAD convention)
+            'content' => 'nullable|array', // Incoming required, HEAD nullable. Keep nullable for flexibility?
+            'sections' => 'nullable|array', // HEAD
+            'template_type' => 'nullable|in:standard,innovative,synthetic', // Incoming required, made nullable for backward compat
+            'bncc_skills' => 'nullable|array',
         ]);
 
-        // Transform array sections to keyed array if needed,
-        // but the model casts to array, so structure [ {title, content}, ... ] is fine.
-        // The View sends `sections[0][title]`, `sections[0][content]`.
-        // This results in an array of arrays, which is valid JSON.
+        $validated['user_id'] = auth()->id() ?? 1;
+
+        // Map 'sections' to 'content' if needed or keep both?
+        // If Model has 'content' cast to array, and 'sections' is just an alias in HEAD?
+        // I will save all.
 
         $plan = LessonPlan::create($validated);
 
@@ -60,38 +57,37 @@ class LessonPlanController extends Controller
             return $plan;
         }
 
-        return redirect()->route('lesson-plans.show', $plan->id) // Or index
-                         ->with('success', 'Plano de aula criado com sucesso!');
+        return redirect()->route('planning.lesson-plans.index')->with('success', 'Plano criado com sucesso.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show($id)
     {
-        $plan = LessonPlan::findOrFail($id);
+        $plan = LessonPlan::with('schoolClass')->findOrFail($id);
 
         if (request()->wantsJson()) {
             return $plan;
         }
 
-        // Return a view for showing the plan (not explicitly asked but good for flow)
-        // Since I don't have the show view, I'll just return the model or redirect to PDF export?
-        // Let's return the model for now to avoid error, or a simple view if I had time.
-        // Prompt only asked for CREATE view.
-        return $plan;
+        return view('planning::lesson-plans.show', compact('plan'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function edit($id)
+    {
+        $plan = LessonPlan::findOrFail($id);
+        return view('planning::lesson-plans.edit', compact('plan'));
+    }
+
+    public function update(Request $request, $id)
     {
         $lessonPlan = LessonPlan::findOrFail($id);
 
         $validated = $request->validate([
             'title' => 'sometimes|required|string|max:255',
+            'school_class_id' => 'nullable|exists:classes,id',
+            'content' => 'nullable|array',
             'sections' => 'nullable|array',
+            'template_type' => 'nullable|in:standard,innovative,synthetic',
+            'bncc_skills' => 'nullable|array',
         ]);
 
         $lessonPlan->update($validated);
@@ -100,13 +96,10 @@ class LessonPlanController extends Controller
             return $lessonPlan;
         }
 
-        return back()->with('success', 'Plano atualizado!');
+        return redirect()->route('planning.lesson-plans.index')->with('success', 'Plano atualizado com sucesso.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy($id)
     {
         $lessonPlan = LessonPlan::findOrFail($id);
         $lessonPlan->delete();
@@ -115,15 +108,9 @@ class LessonPlanController extends Controller
             return response()->noContent();
         }
 
-        return redirect()->route('lesson-plans.index')->with('success', 'Plano removido.');
+        return redirect()->route('planning.lesson-plans.index')->with('success', 'Plano removido.');
     }
 
-    /**
-     * Duplicate an existing lesson plan.
-     *
-     * @param string $id
-     * @return LessonPlan
-     */
     public function duplicate(string $id)
     {
         $original = LessonPlan::findOrFail($id);
@@ -132,20 +119,43 @@ class LessonPlanController extends Controller
         $newPlan->title = $original->title . ' (Cópia)';
         $newPlan->save();
 
-        return $newPlan;
+        return $newPlan; // API or Redirect? HEAD returned object.
     }
 
-    /**
-     * Export the lesson plan to PDF.
-     *
-     * @param string $id
-     * @return \Illuminate\Http\Response
-     */
     public function export(string $id)
     {
         $lessonPlan = LessonPlan::findOrFail($id);
-        $pdf = $this->pdfService->export($lessonPlan);
+        $pdf = $this->pdfExportService->export($lessonPlan);
 
         return $pdf->download("plano_aula_{$lessonPlan->id}.pdf");
+    }
+
+    public function launchClass(Request $request, $id)
+    {
+        try {
+            $plan = LessonPlan::findOrFail($id);
+            $date = $request->input('date');
+
+            $this->lessonPlanService->launchClass($plan, $date);
+
+            return back()->with('success', 'Aula lançada no diário com sucesso!');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function exportBatch(Request $request)
+    {
+        $ids = $request->input('ids', []);
+
+        if (empty($ids)) {
+             return back()->with('error', 'Selecione pelo menos um plano.');
+        }
+
+        try {
+            return $this->pdfExportService->exportBatch($ids);
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
     }
 }

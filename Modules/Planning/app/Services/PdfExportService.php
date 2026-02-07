@@ -5,6 +5,7 @@ namespace Modules\Planning\Services;
 use Modules\Planning\Models\LessonPlan;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Collection;
 
 class PdfExportService
 {
@@ -34,5 +35,24 @@ class PdfExportService
         $pdf->setPaper('a4', 'portrait');
 
         return $pdf;
+    }
+
+    /**
+     * Export multiple lesson plans (Batch).
+     *
+     * @param array $planIds
+     * @return \Illuminate\View\View
+     * @throws \Exception
+     */
+    public function exportBatch(array $planIds)
+    {
+        $plans = LessonPlan::whereIn('id', $planIds)->with('schoolClass')->get();
+
+        if ($plans->isEmpty()) {
+            throw new \Exception("Nenhum plano selecionado.");
+        }
+
+        // Return a view that is styled for printing
+        return view('planning::lesson-plans.export-pdf', compact('plans'));
     }
 }

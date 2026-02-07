@@ -1,32 +1,28 @@
 <?php
 
-namespace Modules\Planning\Models;
+namespace Modules\ClassRecord\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Modules\ClassRecord\Models\SchoolClass;
-use Modules\ClassRecord\Models\ClassDiary;
+use Modules\Planning\Models\LessonPlan;
 
-class LessonPlan extends Model
+class ClassDiary extends Model
 {
     use HasFactory;
 
-    protected $table = 'lesson_plans';
-
     protected $fillable = [
-        'title',
-        'sections',
-        'content',
-        'template_type',
-        'bncc_skills',
         'school_class_id',
+        'lesson_plan_id',
+        'date',
+        'content',
+        'bncc_skills',
         'user_id'
     ];
 
     protected $casts = [
-        'sections' => 'array',
         'content' => 'array',
         'bncc_skills' => 'array',
+        'date' => 'date',
     ];
 
     public function schoolClass()
@@ -34,8 +30,8 @@ class LessonPlan extends Model
         return $this->belongsTo(SchoolClass::class);
     }
 
-    public function classDiaries()
+    public function lessonPlan()
     {
-        return $this->hasMany(ClassDiary::class);
+        return $this->belongsTo(LessonPlan::class);
     }
 }

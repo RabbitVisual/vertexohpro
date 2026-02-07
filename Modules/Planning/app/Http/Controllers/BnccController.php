@@ -5,6 +5,8 @@ namespace Modules\Planning\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Modules\Planning\Services\MagicPlanService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class BnccController extends Controller
 {
@@ -16,12 +18,37 @@ class BnccController extends Controller
     }
 
     /**
-     * Search for a BNCC skill by code.
+     * Search for BNCC skills with caching (Autocomplete).
+     */
+    public function search(Request $request)
+    {
+        $query = $request->input('q');
+
+        if (!$query) {
+            return response()->json([]);
+        }
+
+        // Cache key based on query
+        $cacheKey = 'bncc_search_' . md5($query);
+
+        $skills = Cache::remember($cacheKey, 60 * 24, function () use ($query) { // Cache for 24 hours
+            return DB::table('bncc_skills')
+                ->where('code', 'like', "%{$query}%")
+                ->orWhere('description', 'like', "%{$query}%")
+                ->limit(20)
+                ->get();
+        });
+
+        return response()->json($skills);
+    }
+
+    /**
+     * Get specific skill details by code.
      *
      * @param string $code
      * @return \Illuminate\Http\JsonResponse
      */
-    public function search(string $code)
+    public function show(string $code)
     {
         $skillData = $this->magicPlanService->getSkillByCode($code);
 
@@ -30,5 +57,11 @@ class BnccController extends Controller
         }
 
         return response()->json($skillData);
+    }
+
+    public function index()
+    {
+        // Just return view if needed, or API
+        return view('planning::bncc.index');
     }
 }
