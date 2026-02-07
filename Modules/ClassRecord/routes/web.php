@@ -18,3 +18,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Livewire Quick Attendance
     Route::get('/classrecords/{classId}/attendance', \Modules\ClassRecord\Livewire\QuickAttendance::class)->name('classrecords.attendance');
 });
+
+    // Report Routes
+    Route::get('students/{studentId}/report/sign', [\Modules\ClassRecord\Http\Controllers\ReportController::class, 'showSignaturePage'])->name('classrecords.reports.sign');
+    Route::post('students/{studentId}/report/generate', [\Modules\ClassRecord\Http\Controllers\ReportController::class, 'generate'])->name('classrecords.reports.generate');

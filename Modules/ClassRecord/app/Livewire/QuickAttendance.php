@@ -14,6 +14,7 @@ class QuickAttendance extends Component
     public $date;
     public $students = [];
     public $attendanceData = []; // [student_id => status]
+    public $observations = []; // [student_id => observation]
 
     public function mount($classId)
     {
@@ -36,6 +37,7 @@ class QuickAttendance extends Component
                     ->first();
 
                 $this->attendanceData[$student->id] = $attendance ? $attendance->status : null;
+                $this->observations[$student->id] = $attendance ? $attendance->observation : '';
             }
         }
     }
@@ -46,6 +48,19 @@ class QuickAttendance extends Component
         $this->attendanceData[$studentId] = $status;
 
         // Persist
+        $this->saveAttendance($studentId);
+    }
+
+    public function updated($propertyName)
+    {
+        if (str_starts_with($propertyName, 'observations.')) {
+            $studentId = explode('.', $propertyName)[1];
+            $this->saveAttendance($studentId);
+        }
+    }
+
+    protected function saveAttendance($studentId)
+    {
         Attendance::updateOrCreate(
             [
                 'student_id' => $studentId,
@@ -53,13 +68,15 @@ class QuickAttendance extends Component
                 'date' => $this->date
             ],
             [
-                'status' => $status
+                'status' => $this->attendanceData[$studentId] ?? null,
+                'observation' => $this->observations[$studentId] ?? null,
             ]
         );
     }
 
     public function render()
     {
-        return view('classrecord::livewire.quick-attendance')->layout('classrecord::components.layouts.master');
+        return view('classrecord::livewire.quick-attendance')
+            ->layout('classrecord::components.layouts.master');
     }
 }
