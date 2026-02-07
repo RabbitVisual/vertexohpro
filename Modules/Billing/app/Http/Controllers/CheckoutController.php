@@ -73,7 +73,7 @@ class CheckoutController extends Controller
             ];
 
             // Back URLs
-            $baseUrl = config('app.url'); // Use app.url instead of hardcoded
+            $baseUrl = config('app.url');
             $backUrls = [
                 'success' => "{$baseUrl}/marketplace/success",
                 'failure' => "{$baseUrl}/marketplace/failure",
@@ -87,7 +87,11 @@ class CheckoutController extends Controller
                 $backUrls
             );
 
-            return response()->json(['preference_id' => $preference['id']]);
+            return response()->json([
+                'preference_id' => $preference['id'],
+                'init_point' => $preference['init_point'] ?? null,
+                'sandbox_init_point' => $preference['sandbox_init_point'] ?? null,
+            ]);
 
         } catch (\Exception $e) {
             Log::error('Checkout Failed: ' . $e->getMessage());

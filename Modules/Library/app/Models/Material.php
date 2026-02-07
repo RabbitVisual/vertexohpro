@@ -47,6 +47,10 @@ class Material extends Model
 
     public function getAverageRatingAttribute()
     {
+        // Use loaded relation to avoid N+1 query if eager loaded
+        if ($this->relationLoaded('ratings')) {
+            return $this->ratings->avg('rating') ?? 0;
+        }
         return $this->ratings()->avg('rating') ?? 0;
     }
 }

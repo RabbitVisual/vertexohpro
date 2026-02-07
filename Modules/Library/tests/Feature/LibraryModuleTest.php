@@ -19,8 +19,13 @@ class LibraryModuleTest extends TestCase
 
     public function test_material_routes_exist()
     {
-        // Routes are prefixed with api. due to RouteServiceProvider or grouping logic
+        // API Routes
         $this->assertTrue(\Illuminate\Support\Facades\Route::has('api.materials.index'));
         $this->assertTrue(\Illuminate\Support\Facades\Route::has('api.library.index'));
+
+        // Web Routes
+        $this->assertTrue(\Illuminate\Support\Facades\Route::has('library.index'));
+        $this->assertTrue(\Illuminate\Support\Facades\Route::has('library.my-library'));
+        $this->assertTrue(\Illuminate\Support\Facades\Route::has('library.show'));
     }
 }
