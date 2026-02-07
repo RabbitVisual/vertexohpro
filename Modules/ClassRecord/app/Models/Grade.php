@@ -17,11 +17,14 @@ class Grade extends Model
         'evaluation_number',
         'score',
         'bncc_skill_code',
+        'activity_type',
+        'value',
         'locked_at'
     ];
 
     protected $casts = [
         'score' => 'decimal:2',
+        'value' => 'decimal:2',
         'locked_at' => 'datetime',
     ];
 

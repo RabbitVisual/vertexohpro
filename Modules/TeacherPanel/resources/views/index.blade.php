@@ -45,20 +45,25 @@
 
             <div x-ref="widgetsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($widgets as $widget)
-                    <div data-widget="{{ $widget }}" class="h-full transition-transform duration-200 hover:shadow-lg rounded-lg cursor-move">
+                    <div data-widget="{{ $widget }}" class="h-full relative group transition-transform duration-200 hover:shadow-lg rounded-lg">
+                        <div class="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab drag-handle p-1 text-slate-400 hover:text-slate-600">
+                            <i class="fa-duotone fa-grip-vertical"></i>
+                        </div>
                         @if($widget == 'notas-rapidas')
                             <x-teacherpanel::widgets.notas-rapidas :notes="$notes ?? ''" />
+                        @elseif($widget == 'sticky-notes')
+                             @include('teacherpanel::widgets.sticky-notes')
+                        @elseif($widget == 'support-ticket')
+                             @include('teacherpanel::widgets.support-ticket')
                         @else
                             <x-dynamic-component :component="'teacherpanel::widgets.' . $widget" />
                         @endif
                     </div>
                 @endforeach
             </div>
-
         </div>
     </div>
 
     <x-teacherpanel::notifications-poller />
+    <x-teacherpanel::welcome-tour />
 </x-teacherpanel::layouts.master>
-
-<x-teacherpanel::welcome-tour />

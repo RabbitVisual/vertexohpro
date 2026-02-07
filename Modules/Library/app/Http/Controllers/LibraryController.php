@@ -90,7 +90,6 @@ class LibraryController extends Controller
     {
         $user = $request->user();
 
-        // Standardized to LibraryResource logic
         $purchased = LibraryResource::whereHas('purchases', function($q) use ($user) {
             $q->where('user_id', $user->id);
         })->get();
@@ -113,7 +112,19 @@ class LibraryController extends Controller
         $user = $request->user();
         $hasAccess = $this->downloadService->hasPermission($resource, $user);
 
-        return view('library::show', compact('resource', 'hasAccess'));
+        // Recommendations based on tags
+        $relatedMaterials = collect();
+        if (!empty($resource->tags)) {
+            $query = LibraryResource::where('id', '!=', $id);
+            $query->where(function($q) use ($resource) {
+                foreach ($resource->tags as $tag) {
+                    $q->orWhereJsonContains('tags', $tag);
+                }
+            });
+            $relatedMaterials = $query->inRandomOrder()->take(4)->get();
+        }
+
+        return view('library::show', compact('resource', 'hasAccess', 'relatedMaterials'));
     }
 
     public function store(Request $request)
@@ -171,7 +182,6 @@ class LibraryController extends Controller
         $originalPdfPath = Storage::disk('local')->path($resource->file_path);
 
         $watermarkText = $user->name;
-        // In a real app, adding more identifiers like email/CPF would be better
 
         try {
             $pdfContent = $this->watermarker->apply($originalPdfPath, $watermarkText);

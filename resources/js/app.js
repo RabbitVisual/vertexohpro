@@ -1,14 +1,14 @@
 import './bootstrap';
 import './theme';
-import './auth-forms';
-import './masks';
-import './cep-lookup';
 
 import Sortable from 'sortablejs';
 window.Sortable = Sortable;
 
 import Chart from 'chart.js/auto';
 window.Chart = Chart;
+
+import IMask from 'imask';
+window.IMask = IMask;
 
 import Alpine from 'alpinejs';
 import trap from '@alpinejs/trap';
@@ -26,6 +26,3 @@ window.toast = (message, type = 'success') => {
         detail: { message, type }
     }));
 };
-
-import Chart from 'chart.js/auto';
-window.Chart = Chart;

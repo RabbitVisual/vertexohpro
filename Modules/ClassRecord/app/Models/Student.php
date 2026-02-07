@@ -10,7 +10,24 @@ class Student extends Model
 {
     use HasFactory, Auditable;
 
-    protected $fillable = ['class_id', 'name', 'registration_number', 'email', 'guardian_email'];
+    protected $fillable = [
+        'class_id',
+        'name',
+        'first_name',
+        'last_name',
+        'email',
+        'guardian_email',
+        'registration_number',
+        'number'
+    ];
+
+    public function getFullNameAttribute()
+    {
+        if ($this->first_name && $this->last_name) {
+            return "{$this->first_name} {$this->last_name}";
+        }
+        return $this->name;
+    }
 
     public function schoolClass()
     {

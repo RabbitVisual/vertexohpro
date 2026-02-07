@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasRoles;
+use Modules\Library\Models\LibraryResource;
+use Modules\Billing\Models\MaterialPurchase;
 use Modules\Core\Traits\Auditable;
 
 class User extends Authenticatable
@@ -77,15 +79,26 @@ class User extends Authenticatable
         return $this->photo ? asset('storage/' . $this->photo) : asset('assets/images/default-avatar.png');
     }
 
+    /**
+     * Get the materials created by the user.
+     */
+    public function materials()
+    {
+        return $this->hasMany(LibraryResource::class, 'user_id');
+    }
+
+    /**
+     * Get the materials purchased by the user.
+     */
     public function purchasedMaterials()
     {
         return $this->belongsToMany(
-            \Modules\Library\Models\LibraryResource::class,
+            LibraryResource::class,
             'material_purchases',
             'user_id',
             'library_resource_id'
         )
-        ->using(\Modules\Billing\Models\MaterialPurchase::class)
+        ->using(MaterialPurchase::class)
         ->withPivot(['amount', 'transaction_id'])
         ->withTimestamps();
     }
@@ -93,6 +106,6 @@ class User extends Authenticatable
     // Direct relationship for checking existence
     public function purchases()
     {
-        return $this->hasMany(\Modules\Billing\Models\MaterialPurchase::class);
+        return $this->hasMany(MaterialPurchase::class);
     }
 }

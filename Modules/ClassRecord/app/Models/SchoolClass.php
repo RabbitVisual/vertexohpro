@@ -12,7 +12,16 @@ class SchoolClass extends Model
     use HasFactory, Auditable;
 
     protected $table = 'classes';
-    protected $fillable = ['user_id', 'name', 'year', 'subject', 'is_multigrade', 'grades_covered'];
+
+    protected $fillable = [
+        'user_id',
+        'name',
+        'year',
+        'subject',
+        'grade',
+        'is_multigrade',
+        'grades_covered'
+    ];
 
     protected $casts = [
         'is_multigrade' => 'boolean',
@@ -42,5 +51,10 @@ class SchoolClass extends Model
     public function grades()
     {
         return $this->hasMany(Grade::class, 'class_id');
+    }
+
+    public function classDiaries()
+    {
+        return $this->hasMany(ClassDiary::class, 'class_id');
     }
 }

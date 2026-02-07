@@ -8,6 +8,8 @@ use Modules\ClassRecord\Models\SchoolClass;
 use Modules\ClassRecord\Models\Grade;
 use Modules\ClassRecord\Models\CycleClosure;
 use Modules\ClassRecord\Models\Attendance;
+use Modules\ClassRecord\Models\Student;
+use Modules\ClassRecord\Jobs\SendReportCardJob;
 
 class ClassRecordController extends Controller
 {
@@ -80,10 +82,6 @@ class ClassRecordController extends Controller
 
     /**
      * Close a specific cycle for a class, locking all grades.
-     *
-     * @param Request $request
-     * @param int $classId
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function closeCycle(Request $request, $classId)
     {
@@ -116,13 +114,11 @@ class ClassRecordController extends Controller
     /**
      * Display the class overview with charts.
      */
-<<<<<<< HEAD
     public function overview($classId)
     {
         $schoolClass = SchoolClass::with('students.grades')->findOrFail($classId);
 
         // Prepare data for Chart.js
-        // Compare average grade per cycle
         $cycleAverages = [];
         for ($i = 1; $i <= 4; $i++) {
             $grades = $schoolClass->students->flatMap(function ($student) use ($i) {
@@ -140,8 +136,7 @@ class ClassRecordController extends Controller
             'schoolClass' => $schoolClass,
             'cycleAverages' => $cycleAverages,
         ]);
-=======
-    public function destroy($id) {}
+    }
 
     /**
      * Send report card via email.
@@ -151,6 +146,5 @@ class ClassRecordController extends Controller
         SendReportCardJob::dispatch($student);
 
         return back()->with('success', 'Boletim enviado para processamento!');
->>>>>>> origin/feature/teacher-panel-widgets-12290637904403310292
     }
 }

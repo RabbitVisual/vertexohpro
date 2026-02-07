@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
       x-data="{
-          darkMode: localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+          darkMode: localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
+          sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true'
       }"
       :class="{ 'dark': darkMode }"
       x-init="$watch('darkMode', val => {
@@ -11,7 +12,7 @@
           } else {
               document.documentElement.classList.remove('dark');
           }
-      })"
+      }); $watch('sidebarCollapsed', val => localStorage.setItem('sidebarCollapsed', val))"
 >
 <head>
     <meta charset="utf-8">
@@ -32,13 +33,26 @@
     <!-- Fonts & Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans text-gray-900 bg-background dark:bg-background antialiased">
-    <x-loading-overlay />
-    <livewire:command-palette />
-    <x-core::toast />
+<body class="font-sans text-gray-900 bg-slate-100 dark:bg-slate-950 antialiased overflow-x-hidden">
 
-    <!-- Main Content -->
-    {{ $slot }}
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <x-core::components.sidebar />
+
+        <!-- Main Content -->
+        <main class="flex-1 transition-all duration-300 w-full"
+              :class="sidebarCollapsed ? 'ml-20' : 'ml-64'">
+
+            {{ $slot }}
+
+            <!-- Command Center (CMD+K) -->
+            <x-core::command-palette />
+
+        </main>
+    </div>
+
+    <x-loading-overlay />
+    <x-core::toast />
 
 </body>
 </html>
