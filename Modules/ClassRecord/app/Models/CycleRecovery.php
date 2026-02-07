@@ -9,7 +9,7 @@ class CycleRecovery extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['student_id', 'class_id', 'cycle', 'score'];
+    protected $fillable = ['student_id', 'school_class_id', 'cycle', 'score'];
 
     public function student()
     {
@@ -18,6 +18,6 @@ class CycleRecovery extends Model
 
     public function schoolClass()
     {
-        return $this->belongsTo(SchoolClass::class, 'class_id');
+        return $this->belongsTo(SchoolClass::class);
     }
 }

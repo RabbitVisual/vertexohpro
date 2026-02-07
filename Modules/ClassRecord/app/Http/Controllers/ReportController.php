@@ -49,7 +49,7 @@ class ReportController extends Controller
         $gradesData = [];
 
         foreach ($cycles as $cycle) {
-            $status = $this->gradeService->getCycleStatus($student->id, $student->class_id, $cycle);
+            $status = $this->gradeService->getCycleStatus($student->id, $student->school_class_id, $cycle);
             $gradesData[$cycle] = $status;
         }
 

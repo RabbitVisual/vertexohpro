@@ -96,7 +96,7 @@ class ClassRecordController extends Controller
 
         // Find all grades for this class and cycle that are not locked
         $grades = Grade::whereHas('student', function ($query) use ($classId) {
-            $query->where('class_id', $classId);
+            $query->where('school_class_id', $classId);
         })->where('cycle', $cycle)->whereNull('locked_at')->get();
 
         foreach ($grades as $grade) {

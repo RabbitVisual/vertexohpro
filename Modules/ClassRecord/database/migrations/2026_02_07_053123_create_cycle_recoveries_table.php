@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('cycle_recoveries', function (Blueprint $table) {
             $table->id();
             $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
-            $table->foreignId('class_id')->constrained('classes')->cascadeOnDelete();
+            $table->foreignId('school_class_id')->constrained('school_classes')->cascadeOnDelete();
             $table->integer('cycle');
             $table->decimal('score', 5, 2);
             $table->timestamps();

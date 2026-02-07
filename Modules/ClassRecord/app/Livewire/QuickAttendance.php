@@ -10,29 +10,29 @@ use Carbon\Carbon;
 
 class QuickAttendance extends Component
 {
-    public $classId;
+    public $schoolClassId;
     public $date;
     public $students = [];
     public $attendanceData = []; // [student_id => status]
     public $observations = []; // [student_id => observation]
 
-    public function mount($classId)
+    public function mount($schoolClassId)
     {
-        $this->classId = $classId;
+        $this->schoolClassId = $schoolClassId;
         $this->date = Carbon::today()->format('Y-m-d');
         $this->loadStudents();
     }
 
     public function loadStudents()
     {
-        $schoolClass = SchoolClass::with('students')->find($this->classId);
+        $schoolClass = SchoolClass::with('students')->find($this->schoolClassId);
         if ($schoolClass) {
             $this->students = $schoolClass->students;
 
             // Load existing attendance for today
             foreach ($this->students as $student) {
                 $attendance = Attendance::where('student_id', $student->id)
-                    ->where('class_id', $this->classId)
+                    ->where('school_class_id', $this->schoolClassId)
                     ->where('date', $this->date)
                     ->first();
 
@@ -64,7 +64,7 @@ class QuickAttendance extends Component
         Attendance::updateOrCreate(
             [
                 'student_id' => $studentId,
-                'class_id' => $this->classId,
+                'school_class_id' => $this->schoolClassId,
                 'date' => $this->date
             ],
             [
