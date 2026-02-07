@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use Modules\ClassRecord\Models\SchoolClass;
 use Modules\ClassRecord\Models\Student;
 use Modules\ClassRecord\Models\Attendance;
+use Modules\ClassRecord\Models\Grade;
 use Illuminate\Support\Carbon;
 
 class ClassRecordDatabaseSeeder extends Seeder
@@ -40,6 +41,16 @@ class ClassRecordDatabaseSeeder extends Seeder
                         'status' => rand(0, 10) > 2 ? 'present' : 'absent', // 80% attendance
                     ]);
                 }
+
+                // Create grades
+                // Make some students fail intentionally (id % 3 == 0)
+                $score = ($i % 3 == 0) ? rand(200, 490) / 100 : rand(500, 1000) / 100;
+
+                Grade::create([
+                    'student_id' => $student->id,
+                    'subject' => 'Math',
+                    'score' => $score,
+                ]);
             }
         }
     }

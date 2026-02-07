@@ -23,21 +23,19 @@ class TeacherPanelController extends Controller
     {
         $settings = TeacherPanelSetting::where('user_id', Auth::id())->first();
 
-        $widgets = $settings ? $settings->widget_order : [
+        $defaultWidgets = [
             'resumo-frequencia',
             'agenda-aulas',
             'atalhos-bncc',
-            'marketplace-trends'
+            'marketplace-trends',
+            'alunos-em-risco'
         ];
+
+        $widgets = $settings ? $settings->widget_order : $defaultWidgets;
 
         // Ensure widgets is an array if for some reason it's null in DB
         if (!$widgets) {
-             $widgets = [
-                'resumo-frequencia',
-                'agenda-aulas',
-                'atalhos-bncc',
-                'marketplace-trends'
-            ];
+             $widgets = $defaultWidgets;
         }
 
         return view('teacherpanel::index', compact('widgets'));
@@ -48,7 +46,13 @@ class TeacherPanelController extends Controller
      */
     public function updateSettings(Request $request)
     {
-        $allowedWidgets = ['resumo-frequencia', 'agenda-aulas', 'atalhos-bncc', 'marketplace-trends'];
+        $allowedWidgets = [
+            'resumo-frequencia',
+            'agenda-aulas',
+            'atalhos-bncc',
+            'marketplace-trends',
+            'alunos-em-risco'
+        ];
 
         $request->validate([
             'widget_order' => 'required|array',

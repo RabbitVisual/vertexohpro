@@ -54,3 +54,5 @@
         </div>
     </div>
 </x-teacherpanel::layouts.master>
+
+<x-teacherpanel::notifications-poller />

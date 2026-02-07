@@ -18,3 +18,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('teacherpanels', TeacherPanelController::class)->names('teacherpanel');
 });
+use Modules\TeacherPanel\Http\Controllers\StudentsAtRiskWidgetController;
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('teacherpanel/widgets/students-at-risk', [StudentsAtRiskWidgetController::class, 'index'])->name('teacherpanel.widgets.students_at_risk');
+});
+use Modules\TeacherPanel\Http\Controllers\NotificationsController;
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('teacherpanel/notifications/check', [NotificationsController::class, 'check'])->name('teacherpanel.notifications.check');
+});
