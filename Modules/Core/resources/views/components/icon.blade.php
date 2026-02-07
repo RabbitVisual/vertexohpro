@@ -18,5 +18,5 @@
 @if($iconClass)
     <i {{ $attributes->merge(['class' => $iconClass]) }}></i>
 @else
-    <span {{ $attributes }}></span>
+    <i {{ $attributes->merge(['class' => 'fa-duotone fa-circle-question text-slate-300 dark:text-slate-600 opacity-50 cursor-help', 'title' => "Icon not found: $name"]) }}></i>
 @endif

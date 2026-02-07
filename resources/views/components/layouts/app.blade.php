@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
       x-data="{
-          darkMode: localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+          darkMode: localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
+          sidebarCollapsed: false
       }"
       :class="{ 'dark': darkMode }"
       x-init="$watch('darkMode', val => {
@@ -32,10 +33,22 @@
     <!-- Fonts & Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans text-gray-900 bg-background dark:bg-background antialiased">
-    <!-- Main Content -->
-    {{ $slot }}
+<body class="font-sans text-gray-900 bg-slate-100 dark:bg-slate-950 antialiased overflow-x-hidden">
 
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <x-core::components.sidebar />
+
+        <!-- Main Content -->
+        <main class="flex-1 transition-all duration-300 w-full"
+              :class="sidebarCollapsed ? 'ml-20' : 'ml-64'">
+
+            {{ $slot }}
+
+        </main>
+    </div>
+
+    <x-core::components.toasts />
     <x-loading-overlay />
 </body>
 </html>
