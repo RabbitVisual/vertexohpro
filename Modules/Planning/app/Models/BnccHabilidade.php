@@ -9,6 +9,8 @@ class BnccHabilidade extends Model
 {
     use HasFactory;
 
+    protected $table = 'bncc_habilidades';
+
     protected $fillable = [
         'codigo',
         'descricao',
@@ -16,9 +18,12 @@ class BnccHabilidade extends Model
         'ano_faixa',
         'unidade_tematica',
         'objeto_conhecimento',
+        'objetos_conhecimento',
+        'componente_curricular'
     ];
 
     protected $casts = [
         'codigo' => 'string',
+        'objetos_conhecimento' => 'array',
     ];
 }

@@ -32,4 +32,9 @@ class SchoolClass extends Model
     {
         return $this->hasMany(ClassDiary::class);
     }
+
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
+    }
 }

@@ -11,6 +11,11 @@ class Attendance extends Model
 
     protected $fillable = ['school_class_id', 'student_id', 'date', 'present'];
 
+    protected $casts = [
+        'date' => 'date',
+        'present' => 'boolean',
+    ];
+
     public function student()
     {
         return $this->belongsTo(Student::class);

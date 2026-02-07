@@ -12,6 +12,8 @@ class LessonPlan extends Model
 {
     use HasFactory, Auditable;
 
+    protected $table = 'lesson_plans';
+
     protected $fillable = [
         'user_id',
         'school_class_id',
@@ -19,11 +21,13 @@ class LessonPlan extends Model
         'content',
         'template_type',
         'bncc_codes',
+        'sections'
     ];
 
     protected $casts = [
         'content' => 'array',
         'bncc_codes' => 'array',
+        'sections' => 'array',
     ];
 
     public function user()

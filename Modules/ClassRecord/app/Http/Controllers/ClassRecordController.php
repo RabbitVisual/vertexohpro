@@ -124,7 +124,7 @@ class ClassRecordController extends Controller
         $cycleAverages = [];
         for ($i = 1; $i <= 4; $i++) {
             $grades = $schoolClass->students->flatMap(function ($student) use ($i) {
-                return $student->grades->where('cycle', $i)->pluck('score');
+                return $student->grades->where('cycle', $i)->pluck('value');
             });
 
             if ($grades->count() > 0) {

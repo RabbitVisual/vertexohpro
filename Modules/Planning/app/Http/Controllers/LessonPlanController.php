@@ -21,6 +21,9 @@ class LessonPlanController extends Controller
 
     public function index()
     {
+        if (request()->wantsJson()) {
+            return LessonPlan::all();
+        }
         $plans = LessonPlan::with('schoolClass')->latest()->paginate(10);
         return view('planning::lesson-plans.index', compact('plans'));
     }
@@ -35,14 +38,19 @@ class LessonPlanController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'school_class_id' => 'nullable|exists:school_classes,id',
-            'content' => 'required|array',
-            'template_type' => 'required|in:standard,innovative,synthetic',
+            'content' => 'nullable|array',
+            'template_type' => 'nullable|in:standard,innovative,synthetic',
             'bncc_skills' => 'nullable|array',
+            'sections' => 'nullable|array',
         ]);
 
-        $validated['user_id'] = auth()->id() ?? 1; // Fallback for dev
+        $validated['user_id'] = auth()->id() ?? 1;
 
-        LessonPlan::create($validated);
+        $plan = LessonPlan::create($validated);
+
+        if ($request->wantsJson()) {
+            return $plan;
+        }
 
         return redirect()->route('planning.lesson-plans.index')->with('success', 'Plano criado com sucesso.');
     }
@@ -50,6 +58,9 @@ class LessonPlanController extends Controller
     public function show($id)
     {
         $plan = LessonPlan::with('schoolClass')->findOrFail($id);
+        if (request()->wantsJson()) {
+            return $plan;
+        }
         return view('planning::lesson-plans.show', compact('plan'));
     }
 
@@ -64,13 +75,18 @@ class LessonPlanController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'school_class_id' => 'nullable|exists:school_classes,id',
-            'content' => 'required|array',
-            'template_type' => 'required|in:standard,innovative,synthetic',
+            'content' => 'nullable|array',
+            'template_type' => 'nullable|in:standard,innovative,synthetic',
             'bncc_skills' => 'nullable|array',
+            'sections' => 'nullable|array',
         ]);
 
         $plan = LessonPlan::findOrFail($id);
         $plan->update($validated);
+
+        if ($request->wantsJson()) {
+            return $plan;
+        }
 
         return redirect()->route('planning.lesson-plans.index')->with('success', 'Plano atualizado com sucesso.');
     }
@@ -79,10 +95,13 @@ class LessonPlanController extends Controller
     {
         $plan = LessonPlan::findOrFail($id);
         $plan->delete();
+
+        if (request()->wantsJson()) {
+            return response()->noContent();
+        }
+
         return redirect()->route('planning.lesson-plans.index')->with('success', 'Plano removido.');
     }
-
-    // Custom Actions
 
     public function launchClass(Request $request, $id)
     {
@@ -103,7 +122,6 @@ class LessonPlanController extends Controller
         $ids = $request->input('ids', []);
 
         if (empty($ids)) {
-            // For testing, maybe export all or check query param 'id'
             if ($request->has('id')) {
                 $ids = [$request->input('id')];
             } else {
@@ -116,5 +134,24 @@ class LessonPlanController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
         }
+    }
+
+    public function duplicate($id)
+    {
+        $original = LessonPlan::findOrFail($id);
+
+        $newPlan = $original->replicate();
+        $newPlan->title = $original->title . ' (Cópia)';
+        $newPlan->save();
+
+        return redirect()->route('planning.lesson-plans.index')->with('success', 'Plano duplicado com sucesso!');
+    }
+
+    public function export($id)
+    {
+        $lessonPlan = LessonPlan::findOrFail($id);
+        $pdf = $this->pdfExportService->export($lessonPlan);
+
+        return $pdf->download("plano_aula_{$lessonPlan->id}.pdf");
     }
 }

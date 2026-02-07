@@ -1,5 +1,14 @@
 <x-core::layouts.master title="Criar Plano de Aula">
-    <div x-data="lessonPlanEditor()" class="min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row relative">
+    <div x-data="lessonPlanEditor()" x-init="restoreDraft()" class="min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row relative">
+
+        <!-- Draft Notification -->
+        <div x-show="hasDraft" x-transition class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-indigo-600 text-white px-6 py-3 rounded-lg shadow-xl flex items-center gap-4">
+            <span><i class="fa-duotone fa-floppy-disk"></i> Rascunho encontrado!</span>
+            <div class="flex gap-2">
+                <button @click="loadDraft()" class="bg-white text-indigo-600 px-3 py-1 rounded font-bold text-sm hover:bg-slate-100">Restaurar</button>
+                <button @click="discardDraft()" class="bg-indigo-700 text-white px-3 py-1 rounded font-bold text-sm hover:bg-indigo-800">Descartar</button>
+            </div>
+        </div>
 
         <!-- Left Column: Writing Panel -->
         <div class="flex-1 p-6 md:p-8 overflow-y-auto">
@@ -7,26 +16,29 @@
                 <div>
                     <h1 class="text-3xl font-bold text-white font-poppins mb-2">Novo Plano de Aula</h1>
                     <p class="text-slate-400">Desenvolva sua aula com assistência da BNCC.</p>
+                    <span x-show="lastSaved" class="text-xs text-emerald-400 mt-1 block">
+                        <i class="fa-duotone fa-check-circle"></i> Salvo em: <span x-text="lastSaved"></span>
+                    </span>
                 </div>
                 <div class="flex gap-3">
                     <button @click="showPreview = true" type="button" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition border border-slate-700 flex items-center gap-2">
                         <i class="fa-duotone fa-print"></i>
                         <span class="hidden md:inline">Visualizar Impressão</span>
                     </button>
-                    <button type="submit" form="lesson-plan-form" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg shadow-lg shadow-indigo-900/50 transition font-medium flex items-center gap-2">
+                    <button type="submit" form="lesson-plan-form" @click="clearDraft()" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg shadow-lg shadow-indigo-900/50 transition font-medium flex items-center gap-2">
                         <i class="fa-duotone fa-save"></i>
                         <span>Salvar Plano</span>
                     </button>
                 </div>
             </header>
 
-            <form id="lesson-plan-form" action="{{ route('lesson-plans.store') }}" method="POST" class="space-y-6 max-w-4xl mx-auto">
+            <form id="lesson-plan-form" action="{{ route('planning.lesson-plans.store') }}" method="POST" class="space-y-6 max-w-4xl mx-auto">
                 @csrf
 
                 <!-- Main Title -->
                 <div class="bg-slate-900/50 p-6 rounded-xl border border-slate-800">
                     <label class="block text-sm font-medium text-slate-400 mb-2 uppercase tracking-wider">Título da Aula</label>
-                    <input type="text" name="title" required class="w-full bg-slate-950 border-slate-800 text-white text-xl rounded-lg focus:ring-indigo-500 focus:border-indigo-500 placeholder-slate-600" placeholder="Ex: Introdução à Geografia Física">
+                    <input type="text" name="title" x-model="title" required class="w-full bg-slate-950 border-slate-800 text-white text-xl rounded-lg focus:ring-indigo-500 focus:border-indigo-500 placeholder-slate-600" placeholder="Ex: Introdução à Geografia Física">
                 </div>
 
                 <!-- Dynamic Sections -->
@@ -156,7 +168,7 @@
                         </div>
 
                         <div class="mb-6">
-                            <strong>Título:</strong> <span x-text="document.querySelector('input[name=title]').value || 'Sem título'"></span>
+                            <strong>Título:</strong> <span x-text="title || 'Sem título'"></span>
                         </div>
 
                         <template x-for="section in sections" :key="section.id">
@@ -188,6 +200,7 @@
     <script>
         function lessonPlanEditor() {
             return {
+                title: '',
                 sections: [
                     { id: 1, title: 'Objetivos de Aprendizagem', content: '' },
                     { id: 2, title: 'Conteúdo Programático', content: '' },
@@ -201,9 +214,62 @@
                 showPreview: false,
                 draggedIndex: null,
                 quillInstances: {},
+                hasDraft: false,
+                lastSaved: null,
+                saveInterval: null,
 
                 init() {
-                    // Init logic
+                    // Start auto-save
+                    this.saveInterval = setInterval(() => {
+                        this.saveDraft();
+                    }, 30000); // 30s
+                },
+
+                restoreDraft() {
+                    const draft = localStorage.getItem('lesson_plan_draft');
+                    if (draft) {
+                        this.hasDraft = true;
+                    }
+                },
+
+                loadDraft() {
+                    const draft = JSON.parse(localStorage.getItem('lesson_plan_draft'));
+                    if (draft) {
+                        this.title = draft.title || '';
+                        this.sections = draft.sections || [];
+                        this.lastSaved = new Date().toLocaleTimeString();
+
+                        this.$nextTick(() => {
+                            this.sections.forEach((section, index) => {
+                                if (this.quillInstances[section.id]) {
+                                    this.quillInstances[section.id].root.innerHTML = section.content;
+                                }
+                            });
+                        });
+
+                        this.hasDraft = false;
+                    }
+                },
+
+                discardDraft() {
+                    localStorage.removeItem('lesson_plan_draft');
+                    this.hasDraft = false;
+                },
+
+                saveDraft() {
+                    if (!this.title && this.sections.every(s => !s.content)) return;
+
+                    const draft = {
+                        title: this.title,
+                        sections: this.sections
+                    };
+                    localStorage.setItem('lesson_plan_draft', JSON.stringify(draft));
+                    this.lastSaved = new Date().toLocaleTimeString();
+                },
+
+                clearDraft() {
+                    localStorage.removeItem('lesson_plan_draft');
+                    if (this.saveInterval) clearInterval(this.saveInterval);
                 },
 
                 initQuill(id, index) {
@@ -232,33 +298,17 @@
 
                         // Update model on change
                         quill.on('text-change', () => {
-                            // Find the section again as index might shift?
-                            // Actually sections are reactive, but let's be safe.
                             const currentSection = this.sections.find(s => s.id === id);
                             if (currentSection) {
                                 currentSection.content = quill.root.innerHTML;
                             }
                         });
 
-                        // Watch for external changes (Magic Fill)
                         this.$watch('sections', (val) => {
                             const currentSection = val.find(s => s.id === id);
                             if (currentSection && currentSection.content !== quill.root.innerHTML) {
-                                // Only update if significantly different to avoid cursor jump?
-                                // Ideally check if focused.
-                                // For Magic Fill, it replaces content usually.
-                                // Let's just update for now.
                                 quill.root.innerHTML = currentSection.content;
                             }
-                        });
-
-                        // Handle Drop of Text
-                        quill.root.addEventListener('drop', (e) => {
-                            // Allow default behavior for text, but if we want to insert specific BNCC data:
-                            const skillDesc = e.dataTransfer.getData('text/plain');
-                            // If it's a skill drag, we might want to append.
-                            // Default behavior usually inserts at cursor.
-                            // Let's rely on default behavior for now as it handles cursor position best.
                         });
                     });
                 },
@@ -269,10 +319,11 @@
                     this.bnccResults = [];
 
                     try {
-                        const response = await fetch(`/api/v1/bncc/search/${this.bnccQuery}`);
+                        const response = await fetch(`/api/v1/bncc/search?q=${this.bnccQuery}`);
                         if (response.ok) {
                             const data = await response.json();
-                            this.bnccResults = [data];
+                            // If it returns multiple, show all, if one, map it
+                            this.bnccResults = Array.isArray(data) ? data : [data];
                         }
                     } catch (error) {
                         console.error('Erro na busca BNCC:', error);
@@ -282,27 +333,22 @@
                 },
 
                 magicFill(skill) {
-                    // Update Objectives
                     const objectivesSection = this.sections.find(s => s.title.includes('Objetivos'));
                     if (objectivesSection && skill.suggested_objectives) {
                         const content = skill.suggested_objectives.map(o => `<li>${o}</li>`).join('');
                         objectivesSection.content = `<ul>${content}</ul>`;
                     }
 
-                    // Update Assessment
                     const assessmentSection = this.sections.find(s => s.title.includes('Avaliação'));
                     if (assessmentSection && skill.suggested_assessment) {
                         const content = skill.suggested_assessment.map(a => `<li>${a}</li>`).join('');
                         assessmentSection.content = `<ul>${content}</ul>`;
                     }
 
-                    // Append Materials
                     if (skill.suggested_materials) {
                         let resourcesSection = this.sections.find(s => s.title.includes('Recursos'));
                         if (!resourcesSection) {
                             this.addSection('Recursos Didáticos');
-                            // Wait for reactivity? addSection pushes to array.
-                            // We need to find it again.
                             setTimeout(() => {
                                 resourcesSection = this.sections.find(s => s.title === 'Recursos Didáticos');
                                 if (resourcesSection) {
@@ -315,6 +361,7 @@
                             resourcesSection.content = `<ul>${content}</ul>`;
                         }
                     }
+                    this.saveDraft();
                 },
 
                 addSection(title = 'Nova Seção') {
@@ -330,13 +377,8 @@
                 },
 
                 dragStart(event, index) {
-                    // Only if clicking handle?
-                    // The handle has cursor-move, but the whole div is draggable.
-                    // Check target?
-                    // Let's assume user drags the handle or the box.
-                    // If dragging inside editor, we shouldn't trigger section drag.
                     if (event.target.closest('.ql-editor')) {
-                        event.preventDefault(); // Don't drag section if selecting text
+                        event.preventDefault();
                         return;
                     }
                     this.draggedIndex = index;
@@ -345,11 +387,8 @@
                 },
 
                 dragOver(event, index) {
-                    // Only allow dropping if dragging a section (not text from sidebar)
-                    // But we can't easily distinguish types in dragOver without checking dataTransfer types which is limited.
-                    // However, we can check if draggedIndex is set.
                     if (this.draggedIndex !== null) {
-                         event.preventDefault(); // Allow drop
+                         event.preventDefault();
                     }
                 },
 

@@ -4,6 +4,8 @@ namespace Modules\Billing\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\User;
+use Modules\Library\Models\LibraryResource;
 
 class MaterialPurchase extends Model
 {
@@ -13,7 +15,8 @@ class MaterialPurchase extends Model
         'user_id',
         'library_resource_id',
         'amount',
-        'transaction_id'
+        'transaction_id',
+        'coupon_id'
     ];
 
     protected $casts = [
@@ -22,11 +25,16 @@ class MaterialPurchase extends Model
 
     public function user()
     {
-        return $this->belongsTo(\App\Models\User::class);
+        return $this->belongsTo(User::class);
     }
 
     public function resource()
     {
-        return $this->belongsTo(\Modules\Library\Models\LibraryResource::class, 'library_resource_id');
+        return $this->belongsTo(LibraryResource::class, 'library_resource_id');
+    }
+
+    public function coupon()
+    {
+        return $this->belongsTo(Coupon::class);
     }
 }

@@ -89,8 +89,6 @@ class ReportController extends Controller
         $zip = new ZipArchive;
         if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
             foreach ($schoolClass->students as $student) {
-                // Assuming grades are eager loaded - using localized view name from Jules branch
-                // If view is missing, this will error at runtime, but code is valid.
                 $pdf = Pdf::loadView('classrecord::pdf.report-card', [
                     'student' => $student,
                     'schoolClass' => $schoolClass,

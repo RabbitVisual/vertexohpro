@@ -23,9 +23,9 @@ class MagicPlanService
         return [
             'skill_code' => $skill->codigo,
             'description' => $skill->descricao,
-            'knowledge_objects' => $skill->objeto_conhecimento,
+            'knowledge_objects' => $skill->objetos_conhecimento ?: $skill->objeto_conhecimento,
             'grade_year' => $skill->ano_faixa,
-            'component' => $skill->componente,
+            'component' => $skill->componente_curricular ?: $skill->componente,
             // Enhanced structure for lesson plan
             'suggested_objectives' => $this->generateObjectives($skill),
             'suggested_assessment' => $this->generateAssessment($skill),
@@ -51,12 +51,13 @@ class MagicPlanService
      */
     protected function generateObjectives(BnccHabilidade $skill): array
     {
-        $verb = strtok($skill->descricao, ' '); // Get the first word (usually the verb)
+        $verb = strtok($skill->descricao, ' '); // Get the first word
+        $objects = $skill->objetos_conhecimento ?: (array)$skill->objeto_conhecimento;
         return [
             "Compreender o conceito de {$skill->descricao}",
-            "Identificar elementos relacionados a " . implode(', ', (array)$skill->objeto_conhecimento),
+            "Identificar elementos relacionados a " . implode(', ', (array)$objects),
             "Aplicar o conhecimento de {$verb} em contextos práticos",
-            "Discutir as implicações de " . implode(', ', (array)$skill->objeto_conhecimento)
+            "Discutir as implicações de " . implode(', ', (array)$objects)
         ];
     }
 
@@ -68,9 +69,11 @@ class MagicPlanService
      */
     protected function generateAssessment(BnccHabilidade $skill): array
     {
+        $objects = $skill->objetos_conhecimento ?: (array)$skill->objeto_conhecimento;
+        $component = $skill->componente_curricular ?: $skill->componente;
         return [
-            "Participação em discussões em grupo sobre {$skill->componente}",
-            "Resolução de exercícios práticos envolvendo " . implode(', ', (array)$skill->objeto_conhecimento),
+            "Participação em discussões em grupo sobre {$component}",
+            "Resolução de exercícios práticos envolvendo " . implode(', ', (array)$objects),
             "Apresentação oral ou escrita sobre o tema",
             "Autoavaliação do aprendizado"
         ];

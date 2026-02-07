@@ -19,6 +19,7 @@ return new class extends Migration
             $table->enum('template_type', ['standard', 'active', 'synthetic'])->default('standard');
             $table->json('content')->nullable(); // Stores sections: Introduction, Development, Assessment
             $table->json('bncc_codes')->nullable(); // Array of BNCC codes used
+            $table->json('sections')->nullable(); // Dynamic sections from Jules' branch
             $table->timestamps();
         });
     }

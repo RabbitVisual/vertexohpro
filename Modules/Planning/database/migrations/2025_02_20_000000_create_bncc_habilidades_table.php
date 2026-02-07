@@ -15,10 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('codigo')->unique()->index();
             $table->text('descricao');
-            $table->string('componente'); // Matemática, Língua Portuguesa
+            $table->string('componente')->nullable(); // Matemática, Língua Portuguesa
+            $table->string('componente_curricular')->nullable();
             $table->string('ano_faixa'); // 1º Ano, EF15
             $table->string('unidade_tematica')->nullable();
             $table->string('objeto_conhecimento')->nullable();
+            $table->json('objetos_conhecimento')->nullable();
             $table->timestamps();
         });
     }

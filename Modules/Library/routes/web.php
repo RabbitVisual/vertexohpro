@@ -10,8 +10,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('libraries', LibraryController::class)->names('library');
     Route::resource('library-resources', LibraryResourceController::class);
 
-    // Legacy/Alias routes if needed, otherwise just keep the resource
     Route::get('/author/dashboard', [AuthorDashboardController::class, 'index'])->name('author.dashboard');
-    Route::get('/library/download/{id}', [DownloadController::class, 'download'])->name('library.download');
+    Route::get('/library/my-items', [LibraryController::class, 'myLibrary'])->name('library.my-library');
+    Route::get('/library/download/{id}', [LibraryController::class, 'download'])->name('library.download');
     Route::get('/library/stream/{id}', [DownloadController::class, 'stream'])->name('library.stream');
 });

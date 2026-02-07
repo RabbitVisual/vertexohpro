@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Core\Traits\Auditable;
 use Illuminate\Database\Eloquent\Builder;
+use App\Models\User;
+use Modules\Billing\Models\MaterialPurchase;
 
 class LibraryResource extends Model
 {
@@ -16,12 +18,14 @@ class LibraryResource extends Model
         'title',
         'description',
         'file_path',
+        'preview_image_path',
         'tags',
         'price',
         'status',
         'rejection_reason',
         'version',
-        'free_until'
+        'free_until',
+        'subject'
     ];
 
     protected $casts = [
@@ -32,7 +36,12 @@ class LibraryResource extends Model
 
     public function user()
     {
-        return $this->belongsTo(\App\Models\User::class);
+        return $this->belongsTo(User::class);
+    }
+
+    public function author()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function versions()
@@ -42,7 +51,7 @@ class LibraryResource extends Model
 
     public function purchases()
     {
-        return $this->hasMany(\Modules\Billing\Models\MaterialPurchase::class);
+        return $this->hasMany(MaterialPurchase::class);
     }
 
     public function scopeApproved(Builder $query): void
