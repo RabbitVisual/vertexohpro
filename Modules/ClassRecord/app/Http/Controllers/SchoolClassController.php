@@ -1,62 +1,44 @@
 <?php
 
-/**
- * Autor: Reinan Rodrigues
- * Empresa: Vertex Solutions LTDA © 2026
- * Email: r.rodriguesjs@gmail.com
- */
-
 namespace Modules\ClassRecord\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\ClassRecord\Models\SchoolClass;
+use Modules\ClassRecord\Services\ClassExportService;
 
 class SchoolClassController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $exportService;
+
+    public function __construct(ClassExportService $exportService)
+    {
+        $this->exportService = $exportService;
+    }
+
     public function index()
     {
-        return view('classrecord::index');
+        $classes = SchoolClass::where('user_id', auth()->id())->get();
+        return view('classrecord::classes.index', compact('classes'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('classrecord::create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request) {}
-
-    /**
-     * Show the specified resource.
-     */
     public function show($id)
     {
-        return view('classrecord::show');
+        $class = SchoolClass::findOrFail($id);
+        return view('classrecord::classes.show', compact('class'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
+    public function export($id)
     {
-        return view('classrecord::edit');
+        try {
+            $content = $this->exportService->export($id);
+            $filename = 'backup_turma_' . $id . '_' . date('Ymd_His') . '.csv';
+
+            return response($content)
+                ->header('Content-Type', 'text/csv')
+                ->header('Content-Disposition', "attachment; filename=\"$filename\"");
+        } catch (\Exception $e) {
+            return back()->with('error', 'Erro ao exportar: ' . $e->getMessage());
+        }
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id) {}
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id) {}
 }

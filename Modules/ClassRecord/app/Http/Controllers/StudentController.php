@@ -1,62 +1,46 @@
 <?php
 
-/**
- * Autor: Reinan Rodrigues
- * Empresa: Vertex Solutions LTDA © 2026
- * Email: r.rodriguesjs@gmail.com
- */
-
 namespace Modules\ClassRecord\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\ClassRecord\Models\SchoolClass;
+use Modules\ClassRecord\Services\StudentImportService;
 
 class StudentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $importService;
+
+    public function __construct(StudentImportService $importService)
+    {
+        $this->importService = $importService;
+    }
+
     public function index()
     {
-        return view('classrecord::index');
+        return view('classrecord::students.index');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function import()
     {
-        return view('classrecord::create');
+        $classes = SchoolClass::where('user_id', auth()->id())->get();
+        return view('classrecord::students.import', compact('classes'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request) {}
-
-    /**
-     * Show the specified resource.
-     */
-    public function show($id)
+    public function processImport(Request $request)
     {
-        return view('classrecord::show');
+        $request->validate([
+            'school_class_id' => 'required|exists:school_classes,id',
+            'file' => 'required|file|mimes:csv,txt|max:2048',
+        ]);
+
+        try {
+            $file = $request->file('file');
+            $this->importService->import($file->getRealPath(), $request->school_class_id);
+
+            return redirect()->route('classrecord.students.index')->with('success', 'Alunos importados com sucesso!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Erro na importação: ' . $e->getMessage());
+        }
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
-    {
-        return view('classrecord::edit');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id) {}
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id) {}
 }

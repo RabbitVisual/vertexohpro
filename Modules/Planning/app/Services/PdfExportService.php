@@ -11,9 +11,6 @@ class PdfExportService
 {
     /**
      * Generate a PDF for the lesson plan.
-     *
-     * @param LessonPlan $lessonPlan
-     * @return \Barryvdh\DomPDF\PDF
      */
     public function export(LessonPlan $lessonPlan)
     {
@@ -23,12 +20,10 @@ class PdfExportService
             'date' => now()->format('d/m/Y'),
         ];
 
-        // Ensure the view exists, otherwise fall back to a simple string
         if (View::exists('planning::pdf.lesson-plan')) {
             $pdf = Pdf::loadView('planning::pdf.lesson-plan', $data);
         } else {
-            // Fallback content if view is missing
-            $html = "<h1>{$lessonPlan->title}</h1><p>Objectives: " . json_encode($lessonPlan->sections['objectives'] ?? []) . "</p>";
+            $html = "<h1>{$lessonPlan->title}</h1><p>Objectives: " . json_encode($lessonPlan->content['objectives'] ?? []) . "</p>";
             $pdf = Pdf::loadHTML($html);
         }
 
@@ -39,10 +34,6 @@ class PdfExportService
 
     /**
      * Export multiple lesson plans (Batch).
-     *
-     * @param array $planIds
-     * @return \Illuminate\View\View
-     * @throws \Exception
      */
     public function exportBatch(array $planIds)
     {

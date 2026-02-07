@@ -1,62 +1,120 @@
 <?php
 
-/**
- * Autor: Reinan Rodrigues
- * Empresa: Vertex Solutions LTDA © 2026
- * Email: r.rodriguesjs@gmail.com
- */
-
 namespace Modules\Planning\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Planning\Models\LessonPlan;
+use Modules\Planning\Services\LessonPlanService;
+use Modules\Planning\Services\PdfExportService;
 
 class LessonPlanController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $lessonPlanService;
+    protected $pdfExportService;
+
+    public function __construct(LessonPlanService $lessonPlanService, PdfExportService $pdfExportService)
+    {
+        $this->lessonPlanService = $lessonPlanService;
+        $this->pdfExportService = $pdfExportService;
+    }
+
     public function index()
     {
-        return view('planning::index');
+        $plans = LessonPlan::with('schoolClass')->latest()->paginate(10);
+        return view('planning::lesson-plans.index', compact('plans'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        return view('planning::create');
+        return view('planning::lesson-plans.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request) {}
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'school_class_id' => 'nullable|exists:school_classes,id',
+            'content' => 'required|array',
+            'template_type' => 'required|in:standard,innovative,synthetic',
+            'bncc_skills' => 'nullable|array',
+        ]);
 
-    /**
-     * Show the specified resource.
-     */
+        $validated['user_id'] = auth()->id() ?? 1; // Fallback for dev
+
+        LessonPlan::create($validated);
+
+        return redirect()->route('planning.lesson-plans.index')->with('success', 'Plano criado com sucesso.');
+    }
+
     public function show($id)
     {
-        return view('planning::show');
+        $plan = LessonPlan::with('schoolClass')->findOrFail($id);
+        return view('planning::lesson-plans.show', compact('plan'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit($id)
     {
-        return view('planning::edit');
+        $plan = LessonPlan::findOrFail($id);
+        return view('planning::lesson-plans.edit', compact('plan'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id) {}
+    public function update(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'school_class_id' => 'nullable|exists:school_classes,id',
+            'content' => 'required|array',
+            'template_type' => 'required|in:standard,innovative,synthetic',
+            'bncc_skills' => 'nullable|array',
+        ]);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id) {}
+        $plan = LessonPlan::findOrFail($id);
+        $plan->update($validated);
+
+        return redirect()->route('planning.lesson-plans.index')->with('success', 'Plano atualizado com sucesso.');
+    }
+
+    public function destroy($id)
+    {
+        $plan = LessonPlan::findOrFail($id);
+        $plan->delete();
+        return redirect()->route('planning.lesson-plans.index')->with('success', 'Plano removido.');
+    }
+
+    // Custom Actions
+
+    public function launchClass(Request $request, $id)
+    {
+        try {
+            $plan = LessonPlan::findOrFail($id);
+            $date = $request->input('date');
+
+            $this->lessonPlanService->launchClass($plan, $date);
+
+            return back()->with('success', 'Aula lançada no diário com sucesso!');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function exportBatch(Request $request)
+    {
+        $ids = $request->input('ids', []);
+
+        if (empty($ids)) {
+            // For testing, maybe export all or check query param 'id'
+            if ($request->has('id')) {
+                $ids = [$request->input('id')];
+            } else {
+                 return back()->with('error', 'Selecione pelo menos um plano.');
+            }
+        }
+
+        try {
+            return $this->pdfExportService->exportBatch($ids);
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
+    }
 }

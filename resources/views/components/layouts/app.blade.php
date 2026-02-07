@@ -66,5 +66,12 @@
     <x-loading-overlay />
     <livewire:command-palette />
 
+    <script>
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("/sw.js").then(reg => console.log("SW Registered")).catch(err => console.log("SW Fail", err));
+            });
+        }
+    </script>
 </body>
 </html>

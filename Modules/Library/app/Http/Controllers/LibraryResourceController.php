@@ -5,138 +5,92 @@ namespace Modules\Library\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\Library\Models\LibraryResource;
-use Modules\Library\Models\ResourceVersion;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
+use Modules\Library\Models\ResourceRating;
+use Modules\Library\Services\DownloadService;
 
 class LibraryResourceController extends Controller
 {
-    public function index()
+    protected $downloadService;
+
+    public function __construct(DownloadService $downloadService)
     {
-        $resources = LibraryResource::approved()->paginate(12);
-        return view('library::index', compact('resources'));
+        $this->downloadService = $downloadService;
     }
 
-    public function create()
+    public function index(Request $request)
     {
-        return view('library::create');
-    }
+        // For UI compatibility with Jules visual foundation
+        if ($request->wantsJson()) {
+            $query = LibraryResource::query();
 
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'file' => 'required|file|max:10240', // 10MB
-            'tags' => 'nullable|string', // Comma separated
-        ]);
-
-        $filePath = $request->file('file')->store('library_resources', 'private');
-        $tags = $validated['tags'] ? explode(',', $validated['tags']) : [];
-
-        $resource = LibraryResource::create([
-            'user_id' => auth()->id(),
-            'title' => $validated['title'],
-            'description' => $validated['description'],
-            'price' => $validated['price'],
-            'file_path' => $filePath,
-            'tags' => $tags,
-            'status' => 'pending',
-            'version' => '1.0',
-        ]);
-
-        // Create initial version
-        ResourceVersion::create([
-            'library_resource_id' => $resource->id,
-            'version' => '1.0',
-            'file_path' => $filePath,
-            'changelog' => 'Initial release',
-        ]);
-
-        return redirect()->route('library.index')->with('success', 'Material enviado para aprovação.');
-    }
-
-    public function edit($id)
-    {
-        $resource = LibraryResource::findOrFail($id);
-
-        if ($resource->user_id !== auth()->id()) {
-            abort(403);
-        }
-
-        return view('library::edit', compact('resource'));
-    }
-
-    public function update(Request $request, $id)
-    {
-        $resource = LibraryResource::findOrFail($id);
-
-        if ($resource->user_id !== auth()->id()) {
-            abort(403);
-        }
-
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'file' => 'nullable|file|max:10240',
-            'tags' => 'nullable|string',
-            'version' => 'nullable|string', // Only required if file is uploaded
-            'changelog' => 'nullable|string',
-            'free_until' => 'nullable|date|after:now',
-        ]);
-
-        $updateData = [
-            'title' => $validated['title'],
-            'description' => $validated['description'],
-            'price' => $validated['price'],
-            'tags' => $validated['tags'] ? explode(',', $validated['tags']) : [],
-            'free_until' => $validated['free_until'],
-        ];
-
-        DB::transaction(function () use ($resource, $request, $validated, $updateData) {
-            if ($request->hasFile('file')) {
-                $filePath = $request->file('file')->store('library_resources', 'private');
-
-                // Increment version logic if not provided? Or enforce user input.
-                // Assuming user provides new version string like '1.1'
-                $newVersion = $validated['version'] ?? number_format((float)$resource->version + 0.1, 1);
-
-                $updateData['file_path'] = $filePath;
-                $updateData['version'] = $newVersion;
-                $updateData['status'] = 'pending'; // Re-review required on file update? Let's say yes for safety.
-
-                ResourceVersion::create([
-                    'library_resource_id' => $resource->id,
-                    'version' => $newVersion,
-                    'file_path' => $filePath,
-                    'changelog' => $validated['changelog'] ?? 'Update',
-                ]);
-
-                // Notify purchasers logic here (e.g., dispatch job)
-                // For this task, we assume the notification is passive via Toast on login
+            if ($request->has('search')) {
+                $term = $request->search;
+                $query->where(function($q) use ($term) {
+                    $q->where('title', 'like', "%{$term}%")
+                      ->orWhere('description', 'like', "%{$term}%");
+                });
             }
 
-            $resource->update($updateData);
-        });
+            return response()->json($query->paginate(20));
+        }
 
-        return redirect()->route('author.dashboard')->with('success', 'Material atualizado com sucesso.');
+        return view('library::materials.index');
     }
 
     public function show($id)
     {
-        $resource = LibraryResource::findOrFail($id);
-        return view('library::show', compact('resource'));
+        $resource = LibraryResource::with(['author:id,first_name,last_name,photo', 'ratings.user:id,first_name,last_name,photo'])
+            ->findOrFail($id);
+
+        if (request()->wantsJson()) {
+            return response()->json($resource);
+        }
+
+        return view('library::resources.show', compact('resource'));
     }
 
-    public function destroy($id)
+    public function getDownloadLink(Request $request, $id)
     {
-         $resource = LibraryResource::findOrFail($id);
-         if ($resource->user_id !== auth()->id()) {
-             abort(403);
-         }
-         $resource->delete();
-         return redirect()->route('author.dashboard')->with('success', 'Material removido.');
+        $resource = LibraryResource::findOrFail($id);
+        $user = $request->user();
+
+        try {
+            $url = $this->downloadService->getDownloadUrl($resource, $user);
+            return response()->json(['url' => $url]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 403);
+        }
+    }
+
+    public function download(Request $request, $resourceId, $userId)
+    {
+        if (!$request->hasValidSignature()) {
+            abort(403, 'Invalid signature');
+        }
+
+        $resource = LibraryResource::findOrFail($resourceId);
+        return $this->downloadService->streamDownload($resource);
+    }
+
+    public function rate(Request $request, $id)
+    {
+        $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'nullable|string|max:500',
+        ]);
+
+        $user = $request->user();
+        $resource = LibraryResource::findOrFail($id);
+
+        if (!$this->downloadService->hasPermission($resource, $user)) {
+            return response()->json(['error' => 'You must purchase this material to rate it.'], 403);
+        }
+
+        $rating = ResourceRating::updateOrCreate(
+            ['user_id' => $user->id, 'library_resource_id' => $resource->id],
+            ['rating' => $request->rating, 'comment' => $request->comment]
+        );
+
+        return response()->json(['message' => 'Rating submitted successfully.', 'data' => $rating]);
     }
 }
