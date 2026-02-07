@@ -1,3 +1,3 @@
-<x-layouts.app :title="$title ?? 'Planning Module'">
+<x-core::layouts.master :title="$title ?? 'Planning Module'">
     {{ $slot }}
-</x-layouts.app>
+</x-core::layouts.master>

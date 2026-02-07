@@ -109,5 +109,6 @@ class LibraryController extends Controller
         }
 
         return view('library::show', compact('material', 'hasAccess', 'relatedMaterials'));
+        return view('library::show', compact('material', 'hasAccess'));
     }
 }

@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\URL;
+use Modules\Library\Models\LibraryResource;
 
 class DownloadService
 {
@@ -69,5 +71,16 @@ class DownloadService
 
         // Use Storage::download which streams the file
         return Storage::disk('private')->download($material->file_path, $filename);
+    }
+     * Generate a temporary signed URL for downloading a resource.
+     * The URL expires in 10 minutes.
+     */
+    public function getDownloadUrl(LibraryResource $resource): string
+    {
+        return URL::temporarySignedRoute(
+            'library.stream',
+            now()->addMinutes(10),
+            ['id' => $resource->id]
+        );
     }
 }

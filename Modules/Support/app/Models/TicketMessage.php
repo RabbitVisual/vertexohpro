@@ -15,6 +15,7 @@ class TicketMessage extends Model
         'user_id',
         'message',
     ];
+    protected $fillable = ['ticket_id', 'user_id', 'content'];
 
     public function ticket()
     {
@@ -24,5 +25,6 @@ class TicketMessage extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+        return $this->belongsTo(\App\Models\User::class);
     }
 }

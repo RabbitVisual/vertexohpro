@@ -2,6 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
       x-data="{
           darkMode: localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
+          sidebarCollapsed: false,
           syncTheme(val) {
               const theme = val ? 'dark' : 'light';
               localStorage.setItem('theme', theme);
@@ -46,14 +47,34 @@
     <!-- Fonts & Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans text-gray-900 bg-background dark:bg-background antialiased">
-    <x-loading-overlay />
+<body class="font-sans text-gray-900 bg-slate-100 dark:bg-slate-950 antialiased overflow-x-hidden">
 
-    <!-- Main Content -->
-    {{ $slot }}
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <x-core::components.sidebar />
+
+        <!-- Main Content -->
+        <main class="flex-1 transition-all duration-300 w-full"
+              :class="sidebarCollapsed ? 'ml-20' : 'ml-64'">
+
+            {{ $slot }}
 
     <!-- Command Center (CMD+K) -->
     <x-core::command-palette />
 
+        </main>
+    </div>
+
+    <x-core::components.toasts />
+    <x-loading-overlay />
+    <livewire:command-palette />
+
+    <script>
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("/sw.js").then(reg => console.log("SW Registered")).catch(err => console.log("SW Fail", err));
+            });
+        }
+    </script>
 </body>
 </html>

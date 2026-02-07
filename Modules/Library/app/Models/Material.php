@@ -53,4 +53,5 @@ class Material extends Model
         }
         return $this->ratings()->avg('rating') ?? 0;
     }
+    protected $fillable = ['title', 'downloads_count'];
 }
