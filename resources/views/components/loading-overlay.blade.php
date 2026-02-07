@@ -13,6 +13,7 @@
             this.timeout = setTimeout(() => this.loading = true, 50);
         };
 
+        // Browser Events
         window.addEventListener('beforeunload', () => start('Preparando navegação...'));
         window.addEventListener('submit', (e) => {
             if (e.target.hasAttribute('data-no-loading')) return;
@@ -21,10 +22,18 @@
         window.addEventListener('pageshow', stop);
         window.addEventListener('load', stop);
         window.addEventListener('DOMContentLoaded', stop);
+
+        // Custom Events
         window.addEventListener('stop-loading', stop);
         window.addEventListener('start-loading', (e) => start(e.detail?.message, e.detail?.icon));
 
-        $watch('loading', v => { if (v) setTimeout(() => { if (this.loading) stop(); }, 30000); });
+        // Livewire Navigation (SPA Feel)
+        document.addEventListener('livewire:navigating', () => start('Carregando próxima tela...'));
+        document.addEventListener('livewire:navigated', stop);
+
+        // Safety Timeout
+        $watch('loading', v => { if (v) setTimeout(() => { if (this.loading) stop(); }, 15000); });
+
         stop();
     }
 }"
@@ -32,17 +41,17 @@
     x-cloak
     role="alert"
     aria-busy="true"
-    class="fixed inset-0 z-[9999] flex items-center justify-center bg-white/80 dark:bg-slate-900/85 backdrop-blur-md font-['Poppins']"
+    class="fixed inset-0 z-[9999] flex items-center justify-center bg-white/80 dark:bg-slate-900/90 backdrop-blur-md font-['Poppins'] transition-opacity duration-300"
     x-transition:enter="transition ease-out duration-300"
     x-transition:enter-start="opacity-0"
     x-transition:enter-end="opacity-100"
-    x-transition:leave="transition ease-in duration-200"
+    x-transition:leave="transition ease-in duration-500"
     x-transition:leave-start="opacity-100"
     x-transition:leave-end="opacity-0">
 
     <div class="relative flex flex-col items-center">
         <!-- Main Icon Container -->
-        <div class="relative w-32 h-32 mb-8">
+        <div class="relative w-32 h-32 mb-8 transform transition-all duration-500 hover:scale-105">
             <!-- Pulsing Rings -->
             <div class="absolute inset-0 bg-indigo-500/20 rounded-full animate-ping"></div>
             <div class="absolute inset-2 bg-indigo-500/10 rounded-full animate-pulse delay-75"></div>
@@ -62,7 +71,7 @@
 
         <!-- Message Box -->
         <div class="flex flex-col items-center gap-3">
-            <h3 x-text="message" class="text-xl font-bold text-slate-800 dark:text-white tracking-wide font-['Poppins']"></h3>
+            <h3 x-text="message" class="text-xl font-bold text-slate-800 dark:text-white tracking-wide font-['Poppins'] text-center px-4"></h3>
 
             <div class="flex items-center gap-2 mt-2">
                 <span class="w-2 h-2 rounded-full bg-indigo-500 animate-bounce [animation-delay:-0.3s]"></span>
