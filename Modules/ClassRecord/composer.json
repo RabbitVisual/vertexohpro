@@ -1,0 +1,33 @@
+{
+    "name": "vertex/classrecord",
+    "version": "1.0.0",
+    "description": "Module classrecord - © Vertex Solutions LTDA - 2026 - VS.1.0",
+    "authors": [
+        {
+            "name": "Reinan Rodrigues",
+            "email": "r.rodriguesjs@gmail.com",
+            "homepage": "https://vertexsolutions.com.br",
+            "role": "Developer"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\ClassRecord\\": "app/",
+            "Modules\\ClassRecord\\Database\\Factories\\": "database/factories/",
+            "Modules\\ClassRecord\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\ClassRecord\\Tests\\": "tests/"
+        }
+    }
+}

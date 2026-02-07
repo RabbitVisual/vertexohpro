@@ -1,0 +1,10 @@
+{
+    "Admin": true,
+    "TeacherPanel": true,
+    "Planning": true,
+    "ClassRecord": true,
+    "Library": true,
+    "Support": true,
+    "Billing": true,
+    "Core": true
+}

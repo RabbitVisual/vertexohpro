@@ -1,0 +1,33 @@
+{
+    "name": "vertex/teacherpanel",
+    "version": "1.0.0",
+    "description": "Module teacherpanel - © Vertex Solutions LTDA - 2026 - VS.1.0",
+    "authors": [
+        {
+            "name": "Reinan Rodrigues",
+            "email": "r.rodriguesjs@gmail.com",
+            "homepage": "https://vertexsolutions.com.br",
+            "role": "Developer"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\TeacherPanel\\": "app/",
+            "Modules\\TeacherPanel\\Database\\Factories\\": "database/factories/",
+            "Modules\\TeacherPanel\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\TeacherPanel\\Tests\\": "tests/"
+        }
+    }
+}
