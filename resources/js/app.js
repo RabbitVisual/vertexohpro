@@ -5,10 +5,8 @@ import './masks';
 import './cep-lookup';
 
 import Sortable from 'sortablejs';
-window.Sortable = Sortable;
-
 import Chart from 'chart.js/auto';
-window.Chart = Chart;
+import IMask from 'imask';
 
 import Alpine from 'alpinejs';
 import trap from '@alpinejs/trap';
@@ -18,10 +16,13 @@ Alpine.plugin(trap);
 Alpine.plugin(focus);
 
 window.Alpine = Alpine;
+window.Sortable = Sortable;
+window.Chart = Chart;
+window.IMask = IMask;
+
 Alpine.start();
 
 // Tooltip Directive
-// Simple implementation: creates a fixed div on mouseover and removes it on mouseout
 document.addEventListener('alpine:init', () => {
     Alpine.directive('tooltip', (el, { expression }, { evaluate }) => {
         let tooltipEl = null;
