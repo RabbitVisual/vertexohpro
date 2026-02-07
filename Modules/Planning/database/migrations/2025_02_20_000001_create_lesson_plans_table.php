@@ -13,8 +13,12 @@ return new class extends Migration
     {
         Schema::create('lesson_plans', function (Blueprint $table) {
             $table->id();
-            $table->string('title')->nullable();
-            $table->json('sections')->nullable(); // Dynamic sections: Objectives, Methodology, Materials
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('school_class_id')->nullable()->constrained('school_classes')->onDelete('set null');
+            $table->string('title');
+            $table->enum('template_type', ['standard', 'active', 'synthetic'])->default('standard');
+            $table->json('content')->nullable(); // Stores sections: Introduction, Development, Assessment
+            $table->json('bncc_codes')->nullable(); // Array of BNCC codes used
             $table->timestamps();
         });
     }
