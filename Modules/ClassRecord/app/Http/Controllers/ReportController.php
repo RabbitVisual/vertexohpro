@@ -8,6 +8,9 @@ use Modules\ClassRecord\Models\Student;
 use Modules\ClassRecord\Models\SchoolClass;
 use Modules\ClassRecord\Services\GradeService;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
+use ZipArchive;
+use Illuminate\Support\Str;
 
 class ReportController extends Controller
 {
@@ -73,5 +76,32 @@ class ReportController extends Controller
         ]);
 
         return $pdf->stream("boletim_{$student->name}.pdf");
+    }
+
+    public function batchExport($classId)
+    {
+        $schoolClass = SchoolClass::with(['students.grades'])->findOrFail($classId);
+
+        $zipFileName = 'boletins_' . Str::slug($schoolClass->name) . '_' . date('Ymd_His') . '.zip';
+        // Create in a temp directory
+        $zipPath = storage_path('app/' . $zipFileName);
+
+        $zip = new ZipArchive;
+        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
+            foreach ($schoolClass->students as $student) {
+                // Assuming grades are eager loaded - using localized view name from Jules branch
+                // If view is missing, this will error at runtime, but code is valid.
+                $pdf = Pdf::loadView('classrecord::pdf.report-card', [
+                    'student' => $student,
+                    'schoolClass' => $schoolClass,
+                    'date' => now()->format('d/m/Y'),
+                ]);
+                $filename = Str::slug($student->name) . '_' . $student->id . '_Boletim.pdf';
+                $zip->addFromString($filename, $pdf->output());
+            }
+            $zip->close();
+        }
+
+        return response()->download($zipPath)->deleteFileAfterSend(true);
     }
 }

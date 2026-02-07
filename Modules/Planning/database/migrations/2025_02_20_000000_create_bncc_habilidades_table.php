@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('grades', function (Blueprint $table) {
+        Schema::create('bncc_habilidades', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('student_id')->constrained()->onDelete('cascade');
-            $table->string('subject');
-            $table->decimal('score', 4, 2); // e.g. 10.00
+            $table->string('codigo')->index();
+            $table->text('descricao');
+            $table->json('objetos_conhecimento')->nullable();
+            $table->string('ano_faixa');
+            $table->string('componente_curricular');
             $table->timestamps();
         });
     }
@@ -25,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('grades');
+        Schema::dropIfExists('bncc_habilidades');
     }
 };

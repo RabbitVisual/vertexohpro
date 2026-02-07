@@ -22,8 +22,10 @@ return new class extends Migration
             $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
             $table->foreignId('class_id')->constrained('classes')->cascadeOnDelete();
             $table->integer('cycle');
-            $table->integer('evaluation_number');
+            $table->integer('evaluation_number')->nullable();
+            $table->string('type')->nullable(); // exam, work, participation
             $table->decimal('score', 5, 2);
+            $table->timestamp('locked_at')->nullable();
             $table->timestamps();
         });
     }

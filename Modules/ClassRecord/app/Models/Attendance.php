@@ -11,6 +11,10 @@ class Attendance extends Model
 
     protected $fillable = ['student_id', 'class_id', 'date', 'status', 'observation'];
 
+    protected $casts = [
+        'date' => 'date',
+    ];
+
     public function student()
     {
         return $this->belongsTo(Student::class);
@@ -20,4 +24,5 @@ class Attendance extends Model
     {
         return $this->belongsTo(SchoolClass::class, 'class_id');
     }
+
 }

@@ -4,10 +4,8 @@ namespace Modules\Library\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-<<<<<<< HEAD
 use App\Models\User;
-=======
->>>>>>> origin/feature/teacher-panel-widgets-12290637904403310292
+
 
 class Material extends Model
 {
