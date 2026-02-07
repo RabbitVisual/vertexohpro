@@ -5,6 +5,7 @@ namespace Modules\Library\Services;
 use Modules\Library\Models\Material;
 use App\Models\User;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
 class DownloadService
@@ -19,8 +20,11 @@ class DownloadService
             return true;
         }
 
-        // Check if purchased
-        return $material->purchasers()->where('user_id', $user->id)->exists();
+        // Check if purchased and approved
+        return $material->purchasers()
+            ->where('user_id', $user->id)
+            ->wherePivot('status', 'approved')
+            ->exists();
     }
 
     /**
@@ -34,7 +38,7 @@ class DownloadService
     public function getDownloadUrl(Material $material, User $user): string
     {
         if (!$this->hasPermission($material, $user)) {
-            throw new \Exception("Unauthorized access to material.");
+            throw new \Exception("Unauthorized access to material. Please purchase or wait for approval.");
         }
 
         // Generate signed URL valid for 30 minutes
@@ -46,5 +50,24 @@ class DownloadService
                 'user' => $user->id
             ]
         );
+    }
+
+    /**
+     * Serve the file via stream.
+     *
+     * @param Material $material
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
+    public function streamDownload(Material $material)
+    {
+        if (!Storage::exists($material->file_path)) {
+            abort(404, 'File not found');
+        }
+
+        $extension = pathinfo($material->file_path, PATHINFO_EXTENSION);
+        $filename = \Illuminate\Support\Str::slug($material->title) . '.' . $extension;
+
+        // Use Storage::download which streams the file
+        return Storage::download($material->file_path, $filename);
     }
 }

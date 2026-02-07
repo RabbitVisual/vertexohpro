@@ -4,8 +4,8 @@ namespace Modules\Library\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Modules\Library\Models\Material;
+use Modules\Library\Models\MaterialRating;
 use Modules\Library\Services\DownloadService;
 
 class MaterialController extends Controller
@@ -59,9 +59,10 @@ class MaterialController extends Controller
 
     public function show($id)
     {
-        $material = Material::with('author:id,first_name,last_name,photo') // Eager load minimal author info
+        $material = Material::with(['author:id,first_name,last_name,photo', 'ratings.user:id,first_name,last_name,photo'])
             ->findOrFail($id);
 
+        // Append average_rating is handled by model logic
         return response()->json($material);
     }
 
@@ -86,15 +87,31 @@ class MaterialController extends Controller
 
         $material = Material::findOrFail($materialId);
 
-        // Check if file exists
-        if (!Storage::exists($material->file_path)) {
-             abort(404, 'File not found');
+        // Serve using service
+        return $this->downloadService->streamDownload($material);
+    }
+
+    public function rate(Request $request, $id)
+    {
+        $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'nullable|string|max:500',
+        ]);
+
+        $user = $request->user();
+        $material = Material::findOrFail($id);
+
+        // Check if user has purchased and approved status
+        if (!$this->downloadService->hasPermission($material, $user)) {
+            return response()->json(['error' => 'You must purchase this material to rate it.'], 403);
         }
 
-        // Generate filename for download
-        $extension = pathinfo($material->file_path, PATHINFO_EXTENSION);
-        $filename = \Illuminate\Support\Str::slug($material->title) . '.' . $extension;
+        // Update or create rating
+        $rating = MaterialRating::updateOrCreate(
+            ['user_id' => $user->id, 'material_id' => $material->id],
+            ['rating' => $request->rating, 'comment' => $request->comment]
+        );
 
-        return Storage::download($material->file_path, $filename);
+        return response()->json(['message' => 'Rating submitted successfully.', 'data' => $rating]);
     }
 }

@@ -90,7 +90,7 @@ class User extends Authenticatable
     public function purchasedMaterials()
     {
         return $this->belongsToMany(Material::class, 'material_purchases', 'user_id', 'material_id')
-                    ->withPivot('price_paid', 'purchased_at')
+                    ->withPivot('price_paid', 'purchased_at', 'status')
                     ->withTimestamps();
     }
 }

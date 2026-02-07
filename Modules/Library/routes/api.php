@@ -12,6 +12,7 @@ Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
     Route::get('materials', [MaterialController::class, 'index'])->name('materials.index');
     Route::get('materials/{id}', [MaterialController::class, 'show'])->name('materials.show');
     Route::get('materials/{id}/download-link', [MaterialController::class, 'getDownloadLink'])->name('materials.link');
+    Route::post('materials/{id}/rate', [MaterialController::class, 'rate'])->name('materials.rate');
 });
 
 // Signed Download Route

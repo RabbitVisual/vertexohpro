@@ -26,6 +26,8 @@ class Material extends Model
         'price' => 'decimal:2',
     ];
 
+    protected $appends = ['average_rating'];
+
     public function author()
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -34,7 +36,17 @@ class Material extends Model
     public function purchasers()
     {
         return $this->belongsToMany(User::class, 'material_purchases', 'material_id', 'user_id')
-                    ->withPivot('price_paid', 'purchased_at')
+                    ->withPivot('price_paid', 'purchased_at', 'status')
                     ->withTimestamps();
+    }
+
+    public function ratings()
+    {
+        return $this->hasMany(MaterialRating::class);
+    }
+
+    public function getAverageRatingAttribute()
+    {
+        return $this->ratings()->avg('rating') ?? 0;
     }
 }
