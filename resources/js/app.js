@@ -7,3 +7,37 @@ import './cep-lookup';
 import Alpine from 'alpinejs';
 window.Alpine = Alpine;
 Alpine.start();
+
+// Tooltip Directive
+// Simple implementation: creates a fixed div on mouseover and removes it on mouseout
+document.addEventListener('alpine:init', () => {
+    Alpine.directive('tooltip', (el, { expression }, { evaluate }) => {
+        let tooltipEl = null;
+
+        const show = () => {
+            const text = evaluate(expression);
+            if (!text) return;
+
+            tooltipEl = document.createElement('div');
+            tooltipEl.textContent = text;
+            tooltipEl.className = 'fixed z-[99999] px-2 py-1 bg-slate-800 text-white text-xs rounded shadow-lg pointer-events-none transform -translate-x-1/2 -translate-y-full mt-[-8px] whitespace-nowrap';
+            document.body.appendChild(tooltipEl);
+
+            const rect = el.getBoundingClientRect();
+            tooltipEl.style.left = `${rect.left + rect.width / 2}px`;
+            tooltipEl.style.top = `${rect.top}px`;
+        };
+
+        const hide = () => {
+            if (tooltipEl) {
+                tooltipEl.remove();
+                tooltipEl = null;
+            }
+        };
+
+        el.addEventListener('mouseenter', show);
+        el.addEventListener('mouseleave', hide);
+    });
+});
+import Sortable from 'sortablejs';
+window.Sortable = Sortable;

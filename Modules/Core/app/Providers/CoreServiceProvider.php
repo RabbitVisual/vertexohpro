@@ -27,6 +27,10 @@ class CoreServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->name, 'database/migrations'));
+        Blade::component('core::components.icon', 'icon');
+        Blade::component('core::components.toasts', 'toasts');
+        Blade::component('core::components.card', 'card');
+        Blade::component('core::components.button', 'button');
     }
 
     /**
