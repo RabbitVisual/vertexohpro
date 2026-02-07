@@ -75,4 +75,22 @@ class User extends Authenticatable
     {
         return $this->photo ? asset('storage/' . $this->photo) : asset('assets/images/default-avatar.png');
     }
+
+    public function purchasedMaterials()
+    {
+        return $this->hasManyThrough(
+            \Modules\Library\Models\LibraryResource::class,
+            \Modules\Billing\Models\MaterialPurchase::class,
+            'user_id', // Foreign key on material_purchases table...
+            'id', // Foreign key on library_resources table...
+            'id', // Local key on users table...
+            'library_resource_id' // Local key on material_purchases table...
+        );
+    }
+
+    // Direct relationship for checking existence
+    public function purchases()
+    {
+        return $this->hasMany(\Modules\Billing\Models\MaterialPurchase::class);
+    }
 }

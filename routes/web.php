@@ -14,3 +14,5 @@ Route::get('/login', function () {
 Route::get('/register', function () {
     return view('auth.register');
 })->name('register');
+
+// Temp route for testing

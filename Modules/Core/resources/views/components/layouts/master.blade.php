@@ -17,3 +17,4 @@
         </div>
     </div>
 </x-layouts.app>
+    <x-core::toasts />

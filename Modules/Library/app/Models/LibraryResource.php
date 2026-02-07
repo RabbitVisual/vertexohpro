@@ -18,17 +18,30 @@ class LibraryResource extends Model
         'tags',
         'price',
         'status',
-        'rejection_reason'
+        'rejection_reason',
+        'version',
+        'free_until'
     ];
 
     protected $casts = [
         'tags' => 'array',
         'price' => 'decimal:2',
+        'free_until' => 'datetime',
     ];
 
     public function user()
     {
         return $this->belongsTo(\App\Models\User::class);
+    }
+
+    public function versions()
+    {
+        return $this->hasMany(ResourceVersion::class);
+    }
+
+    public function purchases()
+    {
+        return $this->hasMany(\Modules\Billing\Models\MaterialPurchase::class);
     }
 
     public function scopeApproved(Builder $query): void
@@ -39,5 +52,10 @@ class LibraryResource extends Model
     public function scopePending(Builder $query): void
     {
         $query->where('status', 'pending');
+    }
+
+    public function isFree(): bool
+    {
+        return $this->price == 0 || ($this->free_until && $this->free_until->isFuture());
     }
 }
