@@ -4,79 +4,47 @@ namespace Modules\ClassRecord\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-<<<<<<< HEAD
 use Modules\ClassRecord\Models\SchoolClass;
-use Modules\ClassRecord\Services\StudentImportService;
-
-class StudentController extends Controller
-{
-    protected $importService;
-
-    public function __construct(StudentImportService $importService)
-    {
-        $this->importService = $importService;
-    }
-
-    public function index()
-    {
-        return view('classrecord::students.index');
-    }
-
-    public function import()
-    {
-        $classes = SchoolClass::where('user_id', auth()->id())->get();
-        return view('classrecord::students.import', compact('classes'));
-    }
-
-    public function processImport(Request $request)
-    {
-        $request->validate([
-            'school_class_id' => 'required|exists:school_classes,id',
-            'file' => 'required|file|mimes:csv,txt|max:2048',
-        ]);
-
-        try {
-            $file = $request->file('file');
-            $this->importService->import($file->getRealPath(), $request->school_class_id);
-
-            return redirect()->route('classrecord.students.index')->with('success', 'Alunos importados com sucesso!');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Erro na importação: ' . $e->getMessage());
-        }
-=======
 use Modules\ClassRecord\Models\Student;
-use Modules\ClassRecord\Models\SchoolClass;
 
 class StudentController extends Controller
 {
-    public function store(Request $request, $classId)
+    public function index(Request $request)
+    {
+        $query = Student::with('schoolClass');
+
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->filled('class_id')) {
+            $query->where('class_id', $request->class_id);
+        }
+
+        $students = $query->paginate(15);
+        $classes = SchoolClass::all();
+
+        return view('classrecord::students.index', compact('students', 'classes'));
+    }
+
+    public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'class_id' => 'required|exists:classes,id',
+            'registration_number' => 'nullable|string|max:50',
         ]);
 
-        $class = SchoolClass::where('user_id', auth()->id())->findOrFail($classId);
+        Student::create($validated);
 
-        $student = Student::create([
-            'name' => $validated['name'],
-            'class_id' => $class->id,
-        ]);
-
-        return redirect()->route('classrecords.show', $class->id)
-            ->with('success', 'Student added successfully.');
+        return back()->with('success', 'Estudante adicionado com sucesso!');
     }
 
     public function destroy($id)
     {
-        $student = Student::with('schoolClass')->findOrFail($id);
-
-        if ($student->schoolClass->user_id !== auth()->id()) {
-            abort(403);
-        }
-
+        $student = Student::findOrFail($id);
         $student->delete();
 
-        return redirect()->back()->with('success', 'Student removed successfully.');
->>>>>>> origin/classrecord-module-setup-347080406940848607
+        return back()->with('success', 'Estudante removido com sucesso!');
     }
 }

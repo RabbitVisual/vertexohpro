@@ -16,15 +16,9 @@ class GradeService
      * @param int $cycle
      * @return float|null Returns average or null if no grades.
      */
-<<<<<<< HEAD
-    public function calculateCycleAverage(int $studentId, int $schoolClassId, int $cycle): ?float
-    {
-        $status = $this->getCycleStatus($studentId, $schoolClassId, $cycle);
-=======
     public function calculateCycleAverage(int $studentId, int $classId, int $cycle): ?float
     {
         $status = $this->getCycleStatus($studentId, $classId, $cycle);
->>>>>>> origin/classrecord-module-setup-347080406940848607
         return $status['final'];
     }
 
@@ -36,17 +30,10 @@ class GradeService
      * @param int $cycle
      * @return array
      */
-<<<<<<< HEAD
-    public function getCycleStatus(int $studentId, int $schoolClassId, int $cycle): array
-    {
-        $grades = Grade::where('student_id', $studentId)
-            ->where('school_class_id', $schoolClassId)
-=======
     public function getCycleStatus(int $studentId, int $classId, int $cycle): array
     {
         $grades = Grade::where('student_id', $studentId)
             ->where('class_id', $classId)
->>>>>>> origin/classrecord-module-setup-347080406940848607
             ->where('cycle', $cycle)
             ->get();
 
@@ -62,11 +49,7 @@ class GradeService
         $average = round($grades->avg('score'), 2);
 
         $recovery = CycleRecovery::where('student_id', $studentId)
-<<<<<<< HEAD
-            ->where('school_class_id', $schoolClassId)
-=======
             ->where('class_id', $classId)
->>>>>>> origin/classrecord-module-setup-347080406940848607
             ->where('cycle', $cycle)
             ->first();
 

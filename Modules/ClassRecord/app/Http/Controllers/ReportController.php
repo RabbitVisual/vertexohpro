@@ -8,12 +8,9 @@ use Modules\ClassRecord\Models\Student;
 use Modules\ClassRecord\Models\SchoolClass;
 use Modules\ClassRecord\Services\GradeService;
 use Barryvdh\DomPDF\Facade\Pdf;
-<<<<<<< HEAD
 use Illuminate\Support\Facades\Storage;
 use ZipArchive;
 use Illuminate\Support\Str;
-=======
->>>>>>> origin/classrecord-module-setup-347080406940848607
 
 class ReportController extends Controller
 {
@@ -52,17 +49,12 @@ class ReportController extends Controller
         $gradesData = [];
 
         foreach ($cycles as $cycle) {
-<<<<<<< HEAD
-            $status = $this->gradeService->getCycleStatus($student->id, $student->school_class_id, $cycle);
-=======
             $status = $this->gradeService->getCycleStatus($student->id, $student->class_id, $cycle);
->>>>>>> origin/classrecord-module-setup-347080406940848607
             $gradesData[$cycle] = $status;
         }
 
         // Attendance Summary
         $totalClasses = $student->schoolClass->attendances()
-            ->where('student_id', $student->id)
             ->count();
 
         $absences = $student->attendances()
@@ -84,7 +76,6 @@ class ReportController extends Controller
 
         return $pdf->stream("boletim_{$student->name}.pdf");
     }
-<<<<<<< HEAD
 
     public function batchExport($classId)
     {
@@ -97,6 +88,7 @@ class ReportController extends Controller
         $zip = new ZipArchive;
         if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
             foreach ($schoolClass->students as $student) {
+                // Use a dedicated report card view or the standard student report without signature check if batch
                 $pdf = Pdf::loadView('classrecord::pdf.report-card', [
                     'student' => $student,
                     'schoolClass' => $schoolClass,
@@ -110,6 +102,4 @@ class ReportController extends Controller
 
         return response()->download($zipPath)->deleteFileAfterSend(true);
     }
-=======
->>>>>>> origin/classrecord-module-setup-347080406940848607
 }

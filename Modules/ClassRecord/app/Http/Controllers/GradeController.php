@@ -4,19 +4,16 @@ namespace Modules\ClassRecord\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-<<<<<<< HEAD
+use Modules\ClassRecord\Models\Grade;
+use Modules\ClassRecord\Models\Student;
 
 class GradeController extends Controller
 {
     public function index()
     {
         return view('classrecord::grades.index');
-=======
-use Modules\ClassRecord\Models\Grade;
-use Modules\ClassRecord\Models\Student;
+    }
 
-class GradeController extends Controller
-{
     public function store(Request $request, $studentId)
     {
         $student = Student::with('schoolClass')->findOrFail($studentId);
@@ -43,7 +40,6 @@ class GradeController extends Controller
             ]
         );
 
-        return redirect()->back()->with('success', 'Grade saved successfully.');
->>>>>>> origin/classrecord-module-setup-347080406940848607
+        return redirect()->back()->with('success', 'Nota salva com sucesso!');
     }
 }

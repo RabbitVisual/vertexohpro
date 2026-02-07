@@ -15,10 +15,12 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('title');
-            $table->text('description')->nullable();
+            $table->text('description');
             $table->string('file_path');
-            $table->json('tags')->nullable();
+            $table->string('preview_image_path')->nullable();
             $table->decimal('price', 8, 2)->default(0.00);
+            $table->string('subject')->nullable();
+            $table->json('tags')->nullable();
             $table->string('version')->default('1.0');
             $table->timestamp('free_until')->nullable();
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');

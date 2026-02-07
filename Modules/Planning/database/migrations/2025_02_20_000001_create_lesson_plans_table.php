@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('lesson_plans', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('school_class_id')->nullable()->constrained('school_classes')->onDelete('set null');
+            $table->foreignId('class_id')->nullable()->constrained('classes')->onDelete('set null');
             $table->string('title');
             $table->enum('template_type', ['standard', 'active', 'synthetic'])->default('standard');
             $table->json('content')->nullable(); // Stores sections: Introduction, Development, Assessment

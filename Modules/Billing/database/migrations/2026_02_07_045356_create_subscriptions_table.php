@@ -14,9 +14,12 @@ return new class extends Migration
         Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('plan_id'); // e.g., 'monthly', 'yearly'
-            $table->enum('status', ['active', 'canceled', 'past_due', 'trialing'])->default('active');
-            $table->timestamp('current_period_end')->nullable();
+            $table->string('plan'); // 'free', 'pro', 'monthly', 'yearly'
+            $table->decimal('amount', 10, 2)->default(0.00);
+            $table->enum('status', ['active', 'canceled', 'past_due', 'trialing', 'expired'])->default('active');
+            $table->timestamp('starts_at')->nullable();
+            $table->timestamp('ends_at')->nullable();
+            $table->timestamp('current_period_end')->nullable(); // Kept for compatibility
             $table->timestamps();
         });
     }

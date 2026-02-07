@@ -13,11 +13,14 @@ return new class extends Migration
     {
         Schema::create('material_purchases', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Buyer
-            $table->foreignId('library_resource_id')->constrained('library_resources')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete(); // Buyer
+            $table->foreignId('library_resource_id')->constrained('library_resources')->cascadeOnDelete();
             $table->foreignId('coupon_id')->nullable()->constrained('coupons')->nullOnDelete();
-            $table->decimal('price_paid', 8, 2);
+            $table->decimal('amount', 8, 2);
+            $table->string('transaction_id')->nullable();
             $table->timestamps();
+
+            $table->unique(['user_id', 'library_resource_id']);
         });
     }
 
