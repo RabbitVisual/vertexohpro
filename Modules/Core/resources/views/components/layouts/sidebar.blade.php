@@ -1,5 +1,6 @@
 <div class="flex flex-col w-64 h-full bg-slate-900 text-slate-300 border-r border-slate-800 flex-shrink-0">
-    <div class="flex items-center justify-center h-16 border-b border-slate-800">
+    <div class="flex items-center justify-center h-16 border-b border-slate-800 gap-2">
+        <img src="{{ asset('storage/logo/logo.svg') }}" class="h-8 w-8" alt="Logo">
         <span class="text-xl font-bold text-white">Vertex Oh Pro</span>
     </div>
 

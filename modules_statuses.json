@@ -6,5 +6,6 @@
     "Library": true,
     "Support": true,
     "Billing": true,
-    "Core": true
+    "Core": true,
+    "VertexHomePage": true
 }

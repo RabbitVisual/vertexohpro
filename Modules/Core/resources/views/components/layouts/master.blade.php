@@ -1,7 +1,7 @@
 <x-layouts.app :title="$title ?? 'Vertex Oh Pro'">
     <div class="flex h-screen bg-slate-50 overflow-hidden">
         <!-- Sidebar -->
-        <x-core::layouts.sidebar />
+        <x-sidebar />
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden">

@@ -1,22 +1,20 @@
 <?php
 
-namespace Modules\Core\Providers;
+namespace Modules\VertexHomePage\Providers;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use Livewire\Livewire;
-use Modules\Core\Livewire\CommandPalette;
 
-class CoreServiceProvider extends ServiceProvider
+class VertexHomePageServiceProvider extends ServiceProvider
 {
     use PathNamespace;
 
-    protected string $name = 'Core';
+    protected string $name = 'VertexHomePage';
 
-    protected string $nameLower = 'core';
+    protected string $nameLower = 'vertexhomepage';
 
     /**
      * Boot the application events.
@@ -29,17 +27,6 @@ class CoreServiceProvider extends ServiceProvider
         $this->registerConfig();
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->name, 'database/migrations'));
-
-        Livewire::component('command-palette', CommandPalette::class);
-
-        Blade::component('core::components.icon', 'icon');
-        Blade::component('core::components.sidebar', 'sidebar');
-        Blade::component('core::components.toasts', 'toasts');
-        Blade::component('core::components.toast', 'toast');
-        Blade::component('core::components.card', 'card');
-        Blade::component('core::components.button', 'button');
-        Blade::component('core::components.signature-pad', 'signature-pad');
-        Blade::component('core::components.layouts.master', 'layouts.master');
     }
 
     /**

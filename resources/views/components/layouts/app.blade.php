@@ -37,7 +37,7 @@
 
     <div class="flex min-h-screen">
         <!-- Sidebar -->
-        <x-core::components.sidebar />
+        <x-sidebar />
 
         <!-- Main Content -->
         <main class="flex-1 transition-all duration-300 w-full"
@@ -46,13 +46,13 @@
             {{ $slot }}
 
             <!-- Command Center (CMD+K) -->
-            <x-core::command-palette />
+            <livewire:command-palette />
 
         </main>
     </div>
 
     <x-loading-overlay />
-    <x-core::toast />
+    <x-toast />
 
 </body>
 </html>

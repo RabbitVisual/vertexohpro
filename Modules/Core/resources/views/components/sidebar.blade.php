@@ -4,11 +4,11 @@
     <!-- Logo -->
     <div class="h-16 flex items-center justify-between px-4 border-b border-slate-200 dark:border-slate-800">
         <div class="flex items-center gap-2 font-display font-bold text-xl text-indigo-600 dark:text-indigo-400 overflow-hidden whitespace-nowrap" x-show="!sidebarCollapsed">
-            <x-icon name="graduation-cap" class="text-2xl" />
+            <img src="{{ asset('storage/logo/logo.svg') }}" class="h-8 w-8" alt="Logo">
             <span>Vertex</span>
         </div>
         <div x-show="sidebarCollapsed" class="mx-auto text-indigo-600 dark:text-indigo-400">
-            <x-icon name="graduation-cap" size="xl" />
+            <img src="{{ asset('storage/logo/logo.svg') }}" class="h-8 w-8" alt="Logo">
         </div>
 
         <button @click="sidebarCollapsed = !sidebarCollapsed" class="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-500">
