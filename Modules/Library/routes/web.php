@@ -4,15 +4,20 @@ use Illuminate\Support\Facades\Route;
 use Modules\Library\Http\Controllers\LibraryController;
 use Modules\Library\Http\Controllers\LibraryResourceController;
 
-Route::middleware(['auth', 'verified'])->prefix('library')->name('library.')->group(function () {
-    Route::get('/', [LibraryController::class, 'index'])->name('index'); // Marketplace
-    Route::get('/my-library', [LibraryController::class, 'myLibrary'])->name('my-library'); // My Library
-    Route::get('/{id}', [LibraryController::class, 'show'])->name('show'); // Details
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::resource('libraries', LibraryController::class)->names('library');
+    Route::resource('library-resources', LibraryResourceController::class);
 });
 
-// Checkout Success/Failure/Pending Routes (Generic Marketplace)
-Route::middleware(['auth', 'verified'])->prefix('marketplace')->name('marketplace.')->group(function () {
-    Route::view('/success', 'library::success')->name('success');
-    Route::view('/failure', 'library::failure')->name('failure');
-    Route::view('/pending', 'library::pending')->name('pending');
+use Modules\Library\Http\Controllers\AuthorDashboardController;
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/author/dashboard', [AuthorDashboardController::class, 'index'])->name('author.dashboard');
+});
+
+use Modules\Library\Http\Controllers\DownloadController;
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/library/download/{id}', [DownloadController::class, 'download'])->name('library.download');
+    Route::get('/library/stream/{id}', [DownloadController::class, 'stream'])->name('library.stream');
 });

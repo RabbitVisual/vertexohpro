@@ -1,41 +1,62 @@
 <?php
 
+/**
+ * Autor: Reinan Rodrigues
+ * Empresa: Vertex Solutions LTDA © 2026
+ * Email: r.rodriguesjs@gmail.com
+ */
+
 namespace Modules\ClassRecord\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\ClassRecord\Models\Student;
-use Modules\ClassRecord\Models\SchoolClass;
 
 class StudentController extends Controller
 {
-    public function store(Request $request, $classId)
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
-
-        $class = SchoolClass::where('user_id', auth()->id())->findOrFail($classId);
-
-        $student = Student::create([
-            'name' => $validated['name'],
-            'class_id' => $class->id,
-        ]);
-
-        return redirect()->route('classrecords.show', $class->id)
-            ->with('success', 'Student added successfully.');
+        return view('classrecord::index');
     }
 
-    public function destroy($id)
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
     {
-        $student = Student::with('schoolClass')->findOrFail($id);
-
-        if ($student->schoolClass->user_id !== auth()->id()) {
-            abort(403);
-        }
-
-        $student->delete();
-
-        return redirect()->back()->with('success', 'Student removed successfully.');
+        return view('classrecord::create');
     }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request) {}
+
+    /**
+     * Show the specified resource.
+     */
+    public function show($id)
+    {
+        return view('classrecord::show');
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit($id)
+    {
+        return view('classrecord::edit');
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, $id) {}
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy($id) {}
 }

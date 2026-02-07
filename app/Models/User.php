@@ -8,12 +8,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasRoles;
-use Modules\Library\Models\Material;
+use Modules\Core\Traits\Auditable;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasRoles, SoftDeletes;
+    use HasFactory, Notifiable, HasRoles, SoftDeletes, Auditable;
 
     /**
      * The attributes that are mass assignable.
@@ -77,33 +77,22 @@ class User extends Authenticatable
         return $this->photo ? asset('storage/' . $this->photo) : asset('assets/images/default-avatar.png');
     }
 
-    /**
-     * Get the materials created by the user.
-     */
-    public function materials()
-    {
-        return $this->hasMany(Material::class, 'user_id');
-    }
-
-    /**
-     * Get the materials purchased by the user.
-     */
     public function purchasedMaterials()
     {
-        return $this->belongsToMany(Material::class, 'material_purchases', 'user_id', 'material_id')
-                    ->withPivot('price_paid', 'purchased_at', 'status')
-                    ->withTimestamps();
+        return $this->belongsToMany(
+            \Modules\Library\Models\LibraryResource::class,
+            'material_purchases',
+            'user_id',
+            'library_resource_id'
+        )
+        ->using(\Modules\Billing\Models\MaterialPurchase::class)
+        ->withPivot(['amount', 'transaction_id'])
+        ->withTimestamps();
     }
 
-    // Direct relationship for checking existence (from Unify branch)
+    // Direct relationship for checking existence
     public function purchases()
     {
-        // Assuming Modules\Billing\Models\MaterialPurchase exists or will exist.
-        // If not, this might break. But 'material_purchases' table exists per HEAD relation above.
-        // I will allow this method but ensure class exists if used.
-        // To be safe, I'll use string reference if class might be missing, but 'hasMany' expects class.
-        // I'll keep it commented out if I'm not sure about Billing module presence.
-        // Converting to use string class name to avoid import error if class missing.
-        return $this->hasMany('\Modules\Billing\Models\MaterialPurchase');
+        return $this->hasMany(\Modules\Billing\Models\MaterialPurchase::class);
     }
 }

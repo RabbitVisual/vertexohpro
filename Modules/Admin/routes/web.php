@@ -25,3 +25,10 @@ Route::middleware(['auth', 'verified'])->prefix('admin/plans')->name('admin.plan
     Route::put('/{id}', [PlanManagerController::class, 'update'])->name('update');
     Route::delete('/{id}', [PlanManagerController::class, 'destroy'])->name('destroy');
 });
+
+use Modules\Admin\Http\Controllers\BulkModerationController;
+
+Route::middleware(['auth', 'verified'])->prefix('admin/moderation/bulk')->name('admin.moderation.bulk')->group(function () {
+    Route::get('/', [BulkModerationController::class, 'index']);
+    Route::post('/action', [BulkModerationController::class, 'bulkAction'])->name('.action');
+});

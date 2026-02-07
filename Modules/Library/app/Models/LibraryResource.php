@@ -4,11 +4,12 @@ namespace Modules\Library\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Core\Traits\Auditable;
 use Illuminate\Database\Eloquent\Builder;
 
 class LibraryResource extends Model
 {
-    use HasFactory;
+    use HasFactory, Auditable;
 
     protected $fillable = [
         'user_id',

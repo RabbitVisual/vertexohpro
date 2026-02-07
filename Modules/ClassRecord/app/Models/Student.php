@@ -9,20 +9,10 @@ class Student extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'class_id'];
+    protected $fillable = ['school_class_id', 'name', 'number'];
 
     public function schoolClass()
     {
-        return $this->belongsTo(SchoolClass::class, 'class_id');
-    }
-
-    public function attendances()
-    {
-        return $this->hasMany(Attendance::class);
-    }
-
-    public function grades()
-    {
-        return $this->hasMany(Grade::class);
+        return $this->belongsTo(SchoolClass::class);
     }
 }

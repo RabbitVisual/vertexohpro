@@ -2,40 +2,30 @@
 
 namespace Modules\Planning\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Modules\ClassRecord\Models\SchoolClass;
-use Modules\ClassRecord\Models\ClassDiary;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Core\Traits\Auditable;
+use Modules\Planning\Database\Factories\LessonPlanFactory;
 
 class LessonPlan extends Model
 {
-    use HasFactory;
-
-    protected $table = 'lesson_plans';
+    use HasFactory, Auditable;
 
     protected $fillable = [
+        'user_id',
         'title',
-        'sections',
-        'content',
         'template_type',
-        'bncc_skills',
-        'school_class_id',
-        'user_id'
+        'content',
+        'bncc_codes',
     ];
 
     protected $casts = [
-        'sections' => 'array',
         'content' => 'array',
-        'bncc_skills' => 'array',
+        'bncc_codes' => 'array',
     ];
 
-    public function schoolClass()
+    public function user()
     {
-        return $this->belongsTo(SchoolClass::class);
-    }
-
-    public function classDiaries()
-    {
-        return $this->hasMany(ClassDiary::class);
+        return $this->belongsTo(\App\Models\User::class);
     }
 }
