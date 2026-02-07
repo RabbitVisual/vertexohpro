@@ -23,7 +23,11 @@ php artisan key:generate --force
 
 # 4. Install Node Dependencies (NPM)
 echo "📦 Installing NPM dependencies..."
-npm install --no-audit --no-fund
+if [ -f package-lock.json ]; then
+    npm ci --no-audit --no-fund
+else
+    npm install --no-audit --no-fund
+fi
 
 # 5. Build Assets (Vite)
 echo "🎨 Building frontend assets..."
@@ -38,6 +42,10 @@ if grep -q "DB_CONNECTION=sqlite" .env; then
 else
     echo "⚠️ Skipping DB migration (MySQL configuration assumed). Ensure DB service is active."
 fi
+
+# 7. Clean Git State (Critical for Jules Snapshot)
+echo "🧹 Cleaning Git state..."
+git reset --hard HEAD
 
 echo "✅ Jules Setup Completed Successfully!"
 echo "Ready to accept PRs."
