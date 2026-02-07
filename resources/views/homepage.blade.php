@@ -1,4 +1,4 @@
-<x-layouts.app title="Vertex Oh Pro! - Home">
+<x-layouts.guest title="Vertex Oh Pro! - Home">
     <div class="min-h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-gray-100">
 
         <div class="text-center space-y-8 p-8 max-w-4xl">
@@ -19,12 +19,12 @@
             <!-- CTA Buttons -->
             <div class="flex flex-col sm:flex-row gap-4 justify-center mt-8">
                 <a href="{{ route('login') }}" class="px-8 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition shadow-lg hover:shadow-indigo-500/30 flex items-center justify-center gap-2">
-                    <x-icon name="right-to-bracket" />
+                    <i class="fa-duotone fa-right-to-bracket"></i>
                     Acessar Sistema
                 </a>
 
                 <a href="https://vertexsolutions.com.br" target="_blank" class="px-8 py-3 rounded-lg border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-slate-800 transition font-medium flex items-center justify-center gap-2">
-                    <x-icon name="circle-info" />
+                    <i class="fa-duotone fa-circle-info"></i>
                     Saiba Mais
                 </a>
             </div>
@@ -40,4 +40,4 @@
         </footer>
 
     </div>
-</x-layouts.app>
+</x-layouts.guest>
