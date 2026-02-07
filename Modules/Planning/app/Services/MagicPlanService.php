@@ -23,9 +23,9 @@ class MagicPlanService
         return [
             'skill_code' => $skill->codigo,
             'description' => $skill->descricao,
-            'knowledge_objects' => $skill->objetos_conhecimento,
+            'knowledge_objects' => $skill->objeto_conhecimento,
             'grade_year' => $skill->ano_faixa,
-            'component' => $skill->componente_curricular,
+            'component' => $skill->componente,
             // Enhanced structure for lesson plan
             'suggested_objectives' => $this->generateObjectives($skill),
             'suggested_assessment' => $this->generateAssessment($skill),
@@ -54,9 +54,9 @@ class MagicPlanService
         $verb = strtok($skill->descricao, ' '); // Get the first word (usually the verb)
         return [
             "Compreender o conceito de {$skill->descricao}",
-            "Identificar elementos relacionados a " . implode(', ', (array)$skill->objetos_conhecimento),
+            "Identificar elementos relacionados a " . implode(', ', (array)$skill->objeto_conhecimento),
             "Aplicar o conhecimento de {$verb} em contextos práticos",
-            "Discutir as implicações de " . implode(', ', (array)$skill->objetos_conhecimento)
+            "Discutir as implicações de " . implode(', ', (array)$skill->objeto_conhecimento)
         ];
     }
 
@@ -69,8 +69,8 @@ class MagicPlanService
     protected function generateAssessment(BnccHabilidade $skill): array
     {
         return [
-            "Participação em discussões em grupo sobre {$skill->componente_curricular}",
-            "Resolução de exercícios práticos envolvendo " . implode(', ', (array)$skill->objetos_conhecimento),
+            "Participação em discussões em grupo sobre {$skill->componente}",
+            "Resolução de exercícios práticos envolvendo " . implode(', ', (array)$skill->objeto_conhecimento),
             "Apresentação oral ou escrita sobre o tema",
             "Autoavaliação do aprendizado"
         ];
