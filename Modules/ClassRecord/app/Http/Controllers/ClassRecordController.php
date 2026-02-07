@@ -4,6 +4,8 @@ namespace Modules\ClassRecord\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\ClassRecord\Models\Student;
+use Modules\ClassRecord\Jobs\SendReportCardJob;
 use Modules\ClassRecord\Models\SchoolClass;
 use Modules\ClassRecord\Models\Grade;
 use Modules\ClassRecord\Models\CycleClosure;
@@ -115,6 +117,16 @@ class ClassRecordController extends Controller
     /**
      * Display the class overview with charts.
      */
+    public function destroy($id) {}
+
+    /**
+     * Send report card via email.
+     */
+    public function emailReportCard(Student $student)
+    {
+        SendReportCardJob::dispatch($student);
+
+        return back()->with('success', 'Boletim enviado para processamento!');
     public function overview($classId)
     {
         $schoolClass = SchoolClass::with('students.grades')->findOrFail($classId);

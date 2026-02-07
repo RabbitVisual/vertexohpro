@@ -30,6 +30,8 @@ class ClassRecordDatabaseSeeder extends Seeder
                 $student = Student::create([
                     'name' => "Student $i of $className",
                     'school_class_id' => $class->id,
+                    'email' => "student{$i}.{$class->id}@example.com",
+                    'guardian_email' => "guardian{$i}.{$class->id}@example.com",
                 ]);
 
                 // Create attendance for the last 5 days
@@ -42,6 +44,9 @@ class ClassRecordDatabaseSeeder extends Seeder
                     ]);
                 }
 
+                // Create grades with BNCC skills
+                // Make some students fail intentionally (id % 3 == 0)
+                $scoreMath = ($i % 3 == 0) ? rand(200, 490) / 100 : rand(500, 1000) / 100;
                 // Create grades
                 // Make some students fail intentionally (id % 3 == 0)
                 $score = ($i % 3 == 0) ? rand(200, 490) / 100 : rand(500, 1000) / 100;
@@ -49,6 +54,16 @@ class ClassRecordDatabaseSeeder extends Seeder
                 Grade::create([
                     'student_id' => $student->id,
                     'subject' => 'Math',
+                    'score' => $scoreMath,
+                    'bncc_skill_code' => 'EF06MA01',
+                ]);
+
+                // Another skill where everyone struggles
+                Grade::create([
+                    'student_id' => $student->id,
+                    'subject' => 'Math',
+                    'score' => rand(300, 600) / 100,
+                    'bncc_skill_code' => 'EF06MA02',
                     'score' => $score,
                 ]);
             }
