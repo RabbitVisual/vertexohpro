@@ -5,12 +5,12 @@
     <p><strong>Plataforma SaaS de Produtividade Pedagógica e Gestão de Sala de Aula</strong></p>
 
 
-    <p>
+
 <a href="https://laravel.com"><img src="https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel" alt="Laravel 12"></a>
 <a href="https://tailwindcss.com"><img src="https://img.shields.io/badge/Tailwind_CSS-4.1-38B2AC?style=for-the-badge&logo=tailwind-css" alt="Tailwind 4"></a>
 <a href="https://livewire.laravel.com"><img src="https://img.shields.io/badge/Livewire-3.x-FB70A9?style=for-the-badge&logo=livewire" alt="Livewire 3"></a>
 <a href="https://alpinejs.dev"><img src="https://img.shields.io/badge/Alpine.js-3.x-8BC0D0?style=for-the-badge&logo=alpine.js" alt="Alpine JS"></a>
-    </p>
+
 </div>
 
 
