@@ -12,19 +12,26 @@ class CommandPalette extends Component
 {
     public $query = '';
     public $results = [];
+    public $activeIndex = 0;
 
     public function updatedQuery()
     {
+        $this->activeIndex = 0;
         $this->results = [];
 
         if (strlen($this->query) < 2) {
             return;
         }
 
-        // 1. Search Modules / Navigation (Static for now)
-        $this->searchNavigation();
+        $queryLower = strtolower($this->query);
 
-        // 2. Search Classes
+        // 1. Actions (Quick Actions)
+        $this->searchActions($queryLower);
+
+        // 2. Search Navigation
+        $this->searchNavigation($queryLower);
+
+        // 3. Search Classes
         if (class_exists(SchoolClass::class)) {
             $classes = SchoolClass::where('name', 'like', "%{$this->query}%")
                 ->orWhere('subject', 'like', "%{$this->query}%")
@@ -38,50 +45,90 @@ class CommandPalette extends Component
                     'icon' => 'chalkboard-user',
                     'url' => route('classrecords.show', $class->id),
                     'group' => 'Turmas',
+                    'type' => 'resource',
                 ];
             }
         }
 
-        // 3. Search Students
+        // 4. Search Students
         if (class_exists(Student::class)) {
             $students = Student::where('name', 'like', "%{$this->query}%")
                 ->take(3)
                 ->get();
 
             foreach ($students as $student) {
-                // Assuming we go to class record or student profile
-                // For now, let's link to class record since we don't have a direct student profile route
                 $this->results[] = [
                     'title' => $student->name,
                     'subtitle' => 'Aluno',
                     'icon' => 'user-graduate',
-                    'url' => route('classrecords.show', $student->class_id), // Fallback to class view
+                    'url' => route('classrecords.show', $student->class_id), // Fallback
                     'group' => 'Alunos',
+                    'type' => 'resource',
                 ];
             }
         }
-
-        // 4. Search Lesson Plans (Mock for now as Planning module isn't fully set up in context)
-        // $this->results[] = ...
     }
 
-    private function searchNavigation()
+    private function searchActions($query)
+    {
+        $actions = [
+            [
+                'title' => 'Criar Nova Turma',
+                'keywords' => ['criar', 'nova', 'turma', 'adicionar'],
+                'url' => route('classrecords.create'),
+                'icon' => 'plus-circle',
+                'group' => 'Ações Rápidas',
+                'type' => 'action',
+                'subtitle' => 'Novo Registro',
+            ],
+            [
+                'title' => 'Lançar Falta',
+                'keywords' => ['lançar', 'falta', 'chamada', 'frequência'],
+                'url' => route('classrecords.index'),
+                'icon' => 'user-xmark',
+                'group' => 'Ações Rápidas',
+                'type' => 'action',
+                'subtitle' => 'Frequência',
+            ],
+            [
+                'title' => 'Novo Plano de Aula',
+                'keywords' => ['novo', 'plano', 'aula', 'planejamento'],
+                'url' => '#',
+                'icon' => 'file-signature',
+                'group' => 'Ações Rápidas',
+                'type' => 'action',
+                'subtitle' => 'Planejamento',
+            ],
+        ];
+
+        foreach ($actions as $action) {
+            foreach ($action['keywords'] as $keyword) {
+                if (Str::contains($query, $keyword) || Str::contains(strtolower($action['title']), $query)) {
+                    $this->results[] = $action;
+                    break;
+                }
+            }
+        }
+    }
+
+    private function searchNavigation($query)
     {
         $navItems = [
             ['title' => 'Dashboard', 'url' => '/', 'icon' => 'chart-line'],
             ['title' => 'Diário de Classe', 'url' => route('classrecords.index'), 'icon' => 'book-open'],
-            ['title' => 'Planejamento', 'url' => '#', 'icon' => 'calendar-lines-pen'], // Placeholder
-            ['title' => 'Biblioteca', 'url' => '#', 'icon' => 'books'], // Placeholder
+            ['title' => 'Planejamento', 'url' => '#', 'icon' => 'calendar-lines-pen'],
+            ['title' => 'Biblioteca', 'url' => '#', 'icon' => 'books'],
         ];
 
         foreach ($navItems as $item) {
-            if (Str::contains(strtolower($item['title']), strtolower($this->query))) {
+            if (Str::contains(strtolower($item['title']), $query)) {
                 $this->results[] = [
                     'title' => $item['title'],
                     'subtitle' => 'Navegação',
                     'icon' => $item['icon'],
                     'url' => $item['url'],
                     'group' => 'Sistema',
+                    'type' => 'navigation',
                 ];
             }
         }
