@@ -1,62 +1,77 @@
 <?php
 
-/**
- * Autor: Reinan Rodrigues
- * Empresa: Vertex Solutions LTDA © 2026
- * Email: r.rodriguesjs@gmail.com
- */
-
 namespace Modules\ClassRecord\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\ClassRecord\Models\SchoolClass;
 
 class ClassRecordController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        return view('classrecord::index');
+        $classes = SchoolClass::where('user_id', auth()->id())->get();
+        return view('classrecord::index', compact('classes'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('classrecord::create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request) {}
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'subject' => 'required|string|max:255',
+            'year' => 'required|string|max:50',
+        ]);
 
-    /**
-     * Show the specified resource.
-     */
+        $class = SchoolClass::create([
+            'name' => $validated['name'],
+            'subject' => $validated['subject'],
+            'year' => $validated['year'],
+            'user_id' => auth()->id(),
+        ]);
+
+        return redirect()->route('classrecords.index')->with('success', 'Class created successfully.');
+    }
+
     public function show($id)
     {
-        return view('classrecord::show');
+        $class = SchoolClass::where('user_id', auth()->id())
+            ->with(['students.grades', 'attendances'])
+            ->findOrFail($id);
+
+        return view('classrecord::show', compact('class'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit($id)
     {
-        return view('classrecord::edit');
+        $class = SchoolClass::where('user_id', auth()->id())->findOrFail($id);
+        return view('classrecord::edit', compact('class'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id) {}
+    public function update(Request $request, $id)
+    {
+        $class = SchoolClass::where('user_id', auth()->id())->findOrFail($id);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id) {}
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'subject' => 'required|string|max:255',
+            'year' => 'required|string|max:50',
+        ]);
+
+        $class->update($validated);
+
+        return redirect()->route('classrecords.index')->with('success', 'Class updated successfully.');
+    }
+
+    public function destroy($id)
+    {
+        $class = SchoolClass::where('user_id', auth()->id())->findOrFail($id);
+        $class->delete();
+
+        return redirect()->route('classrecords.index')->with('success', 'Class deleted successfully.');
+    }
 }

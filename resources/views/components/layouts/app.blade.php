@@ -34,6 +34,8 @@
 </head>
 <body class="font-sans text-gray-900 bg-background dark:bg-background antialiased">
     <x-loading-overlay />
+    <livewire:command-palette />
+    <x-core::toast />
 
     <!-- Main Content -->
     {{ $slot }}
