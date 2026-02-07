@@ -27,8 +27,9 @@ class PdfExportService
         ];
 
         // Generate a deterministic hash for audit
-        // Hash components: StudentID + ClassID + CurrentDate + SerializedGrades
-        $dataToHash = "Student:{$student->id}|Class:{$student->school_class_id}|Date:" . now()->format('Y-m-d') . "|" . $grades->pluck('id', 'score', 'subject')->toJson();
+        // Hash components: StudentID + ClassID + CurrentDate + SerializedGrades (id, subject, score)
+        $serializedGrades = $grades->map(fn($g) => $g->only(['id', 'subject', 'score']))->toJson();
+        $dataToHash = "Student:{$student->id}|Class:{$student->school_class_id}|Date:" . now()->format('Y-m-d') . "|" . $serializedGrades;
         $signatureHash = hash('sha256', $dataToHash);
 
         // Create a unique ID for this report generation instance

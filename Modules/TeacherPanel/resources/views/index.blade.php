@@ -46,13 +46,19 @@
             <div x-ref="widgetsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($widgets as $widget)
                     <div data-widget="{{ $widget }}" class="h-full transition-transform duration-200 hover:shadow-lg rounded-lg cursor-move">
-                        <x-dynamic-component :component="'teacherpanel::widgets.' . $widget" />
+                        @if($widget == 'notas-rapidas')
+                            <x-teacherpanel::widgets.notas-rapidas :notes="$notes ?? ''" />
+                        @else
+                            <x-dynamic-component :component="'teacherpanel::widgets.' . $widget" />
+                        @endif
                     </div>
                 @endforeach
             </div>
 
         </div>
     </div>
+
+    <x-teacherpanel::notifications-poller />
 </x-teacherpanel::layouts.master>
 
-<x-teacherpanel::notifications-poller />
+<x-teacherpanel::welcome-tour />

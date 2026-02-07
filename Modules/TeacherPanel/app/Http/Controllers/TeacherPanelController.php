@@ -28,7 +28,8 @@ class TeacherPanelController extends Controller
             'agenda-aulas',
             'atalhos-bncc',
             'marketplace-trends',
-            'alunos-em-risco'
+            'alunos-em-risco',
+            'notas-rapidas'
         ];
 
         $widgets = $settings ? $settings->widget_order : $defaultWidgets;
@@ -38,7 +39,9 @@ class TeacherPanelController extends Controller
              $widgets = $defaultWidgets;
         }
 
-        return view('teacherpanel::index', compact('widgets'));
+        $notes = $settings ? $settings->notes : '';
+
+        return view('teacherpanel::index', compact('widgets', 'notes'));
     }
 
     /**
@@ -51,7 +54,8 @@ class TeacherPanelController extends Controller
             'agenda-aulas',
             'atalhos-bncc',
             'marketplace-trends',
-            'alunos-em-risco'
+            'alunos-em-risco',
+            'notas-rapidas'
         ];
 
         $request->validate([
@@ -67,6 +71,36 @@ class TeacherPanelController extends Controller
         return response()->json([
             'message' => 'Configurações salvas com sucesso!',
             'settings' => $settings
+        ]);
+    }
+
+    /**
+     * Update quick notes.
+     */
+    public function updateNotes(Request $request)
+    {
+        $request->validate([
+            'notes' => 'nullable|string',
+        ]);
+
+        // Get current settings or create
+        $settings = TeacherPanelSetting::firstOrCreate(
+            ['user_id' => Auth::id()],
+            ['widget_order' => [
+                'resumo-frequencia',
+                'agenda-aulas',
+                'atalhos-bncc',
+                'marketplace-trends',
+                'alunos-em-risco',
+                'notas-rapidas'
+            ]]
+        );
+
+        $settings->notes = $request->notes;
+        $settings->save();
+
+        return response()->json([
+            'message' => 'Notas salvas com sucesso!',
         ]);
     }
 

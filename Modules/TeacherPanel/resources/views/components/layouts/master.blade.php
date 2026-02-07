@@ -20,3 +20,5 @@
     </script>
     @endpush
 </x-layouts.app>
+
+<x-teacherpanel::offline-indicator />
