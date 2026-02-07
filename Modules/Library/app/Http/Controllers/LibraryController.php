@@ -1,62 +1,101 @@
 <?php
 
-/**
- * Autor: Reinan Rodrigues
- * Empresa: Vertex Solutions LTDA © 2026
- * Email: r.rodriguesjs@gmail.com
- */
-
 namespace Modules\Library\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Library\Models\Material;
+use Modules\Library\Services\DownloadService;
 
 class LibraryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    protected $downloadService;
+
+    public function __construct(DownloadService $downloadService)
     {
-        return view('library::index');
+        $this->downloadService = $downloadService;
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display the Marketplace (All Materials) with filters.
      */
-    public function create()
+    public function index(Request $request)
     {
-        return view('library::create');
+        $query = Material::with('author', 'ratings');
+
+        // Text Search
+        if ($request->filled('search')) {
+            $term = $request->search;
+            $query->where(function($q) use ($term) {
+                $q->where('title', 'like', "%{$term}%")
+                  ->orWhere('description', 'like', "%{$term}%");
+            });
+        }
+
+        // Filter by Price
+        if ($request->filled('price')) {
+            if ($request->price === 'free') {
+                $query->where('price', 0);
+            } elseif ($request->price === 'paid') {
+                $query->where('price', '>', 0);
+            }
+        }
+
+        // Filter by Tags (Subject/Grade)
+        if ($request->filled('subject')) {
+            $query->whereJsonContains('tags', $request->subject);
+        }
+        if ($request->filled('grade')) {
+            $query->whereJsonContains('tags', $request->grade);
+        }
+
+        // Filter by BNCC Code
+        if ($request->filled('bncc')) {
+            $bncc = $request->bncc;
+            // Support multiple codes if comma-separated
+            $codes = explode(',', $bncc);
+            foreach ($codes as $code) {
+                $query->whereJsonContains('bncc_codes', trim($code));
+            }
+        }
+
+        $materials = $query->latest()->paginate(12)->withQueryString();
+
+        return view('library::index', compact('materials'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Display the authenticated user's purchased materials.
      */
-    public function store(Request $request) {}
-
-    /**
-     * Show the specified resource.
-     */
-    public function show($id)
+    public function myLibrary(Request $request)
     {
-        return view('library::show');
+        $user = $request->user();
+
+        $purchased = $user->purchasedMaterials()
+            ->wherePivot('status', 'approved')
+            ->orderByPivot('purchased_at', 'desc')
+            ->get();
+
+        $created = $user->materials()
+            ->with('ratings')
+            ->withCount('purchasers')
+            ->latest()
+            ->get();
+
+        return view('library::my-library', compact('purchased', 'created'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Display the specified resource.
      */
-    public function edit($id)
+    public function show(Request $request, $id)
     {
-        return view('library::edit');
+        $material = Material::with(['author', 'ratings.user'])
+            ->findOrFail($id);
+
+        $user = $request->user();
+        $hasAccess = $this->downloadService->hasPermission($material, $user);
+
+        return view('library::show', compact('material', 'hasAccess'));
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id) {}
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id) {}
 }

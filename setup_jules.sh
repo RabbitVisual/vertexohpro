@@ -13,6 +13,10 @@ else
     echo "✅ .env already exists."
 fi
 
+# 1.1 Update Codebase
+echo "🔄 Pulling latest changes from main..."
+git pull origin main
+
 # 2. Install PHP Dependencies (Composer)
 echo "📦 Installing Composer dependencies..."
 composer install --prefer-dist --no-progress --no-interaction

@@ -15,6 +15,19 @@ class SchoolClass extends Model
         'is_multigrade' => 'boolean',
         'grades_covered' => 'array',
     ];
+use Modules\Core\Traits\Auditable;
+use Modules\Planning\Models\LessonPlan;
+
+class SchoolClass extends Model
+{
+    use HasFactory, Auditable;
+
+    protected $fillable = ['user_id', 'name', 'year', 'subject'];
+
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class);
+    }
 
     public function students()
     {
@@ -24,5 +37,13 @@ class SchoolClass extends Model
     public function attendances()
     {
         return $this->hasMany(Attendance::class);
+    public function lessonPlans()
+    {
+        return $this->hasMany(LessonPlan::class);
+    }
+
+    public function classDiaries()
+    {
+        return $this->hasMany(ClassDiary::class);
     }
 }

@@ -30,6 +30,7 @@ class TeacherPanelController extends Controller
             'marketplace-trends',
             'alunos-em-risco',
             'notas-rapidas'
+            'alunos-em-risco'
         ];
 
         $widgets = $settings ? $settings->widget_order : $defaultWidgets;
@@ -42,6 +43,7 @@ class TeacherPanelController extends Controller
         $notes = $settings ? $settings->notes : '';
 
         return view('teacherpanel::index', compact('widgets', 'notes'));
+        return view('teacherpanel::index', compact('widgets'));
     }
 
     /**
@@ -56,6 +58,7 @@ class TeacherPanelController extends Controller
             'marketplace-trends',
             'alunos-em-risco',
             'notas-rapidas'
+            'alunos-em-risco'
         ];
 
         $request->validate([

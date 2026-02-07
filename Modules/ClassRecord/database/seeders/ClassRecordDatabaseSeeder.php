@@ -47,6 +47,9 @@ class ClassRecordDatabaseSeeder extends Seeder
                 // Create grades with BNCC skills
                 // Make some students fail intentionally (id % 3 == 0)
                 $scoreMath = ($i % 3 == 0) ? rand(200, 490) / 100 : rand(500, 1000) / 100;
+                // Create grades
+                // Make some students fail intentionally (id % 3 == 0)
+                $score = ($i % 3 == 0) ? rand(200, 490) / 100 : rand(500, 1000) / 100;
 
                 Grade::create([
                     'student_id' => $student->id,
@@ -61,6 +64,7 @@ class ClassRecordDatabaseSeeder extends Seeder
                     'subject' => 'Math',
                     'score' => rand(300, 600) / 100,
                     'bncc_skill_code' => 'EF06MA02',
+                    'score' => $score,
                 ]);
             }
         }
