@@ -33,10 +33,9 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans text-gray-900 bg-background dark:bg-background antialiased">
-    <x-loading-overlay />
-
     <!-- Main Content -->
     {{ $slot }}
 
+    <x-loading-overlay />
 </body>
 </html>
