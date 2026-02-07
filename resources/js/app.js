@@ -9,10 +9,8 @@ import Chart from 'chart.js/auto';
 import IMask from 'imask';
 
 import Alpine from 'alpinejs';
-import trap from '@alpinejs/trap';
 import focus from '@alpinejs/focus';
 
-Alpine.plugin(trap);
 Alpine.plugin(focus);
 
 window.Alpine = Alpine;
