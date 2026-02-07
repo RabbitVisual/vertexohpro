@@ -1,7 +1,6 @@
 <?php
 
 return [
-<<<<<<< HEAD
     'edit' => 'fa-duotone fa-pen-to-square',
     'delete' => 'fa-duotone fa-trash',
     'save' => 'fa-duotone fa-floppy-disk',

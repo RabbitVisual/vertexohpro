@@ -11,6 +11,12 @@ import Chart from 'chart.js/auto';
 window.Chart = Chart;
 
 import Alpine from 'alpinejs';
+import trap from '@alpinejs/trap';
+import focus from '@alpinejs/focus';
+
+Alpine.plugin(trap);
+Alpine.plugin(focus);
+
 window.Alpine = Alpine;
 Alpine.start();
 
@@ -45,3 +51,10 @@ document.addEventListener('alpine:init', () => {
         el.addEventListener('mouseleave', hide);
     });
 });
+
+// Global Toast Helper
+window.toast = (message, type = 'success') => {
+    window.dispatchEvent(new CustomEvent('notify', {
+        detail: { message, type }
+    }));
+};

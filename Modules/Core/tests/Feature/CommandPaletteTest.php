@@ -19,7 +19,6 @@ class CommandPaletteTest extends TestCase
 
     public function test_search_functionality()
     {
-        // We test with a term that hits the static navigation items to avoid DB dependency issues across modules
         Livewire::test(CommandPalette::class)
             ->set('query', 'Diário')
             ->assertSee('Diário de Classe');
@@ -27,5 +26,13 @@ class CommandPaletteTest extends TestCase
         Livewire::test(CommandPalette::class)
             ->set('query', 'Dashboard')
             ->assertSee('Dashboard');
+    }
+
+    public function test_action_search()
+    {
+        Livewire::test(CommandPalette::class)
+            ->set('query', 'Criar Turma')
+            ->assertSee('Criar Nova Turma')
+            ->assertSee('Ação'); // Check for the badge
     }
 }

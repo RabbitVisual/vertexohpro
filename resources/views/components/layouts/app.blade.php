@@ -51,6 +51,7 @@
     <x-core::components.toasts />
     <x-loading-overlay />
     <livewire:command-palette />
+    <x-core::toast />
 
 </body>
 </html>
