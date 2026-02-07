@@ -13,8 +13,8 @@
             this.timeout = setTimeout(() => this.loading = true, 50);
         };
 
-        // Standard DOM Events
-        window.addEventListener('beforeunload', () => start('Navegando...'));
+        // Browser Events
+        window.addEventListener('beforeunload', () => start('Preparando navegação...'));
         window.addEventListener('submit', (e) => {
             if (e.target.hasAttribute('data-no-loading')) return;
             start('Salvando seu progresso...');
@@ -27,11 +27,13 @@
         window.addEventListener('stop-loading', stop);
         window.addEventListener('start-loading', (e) => start(e.detail?.message, e.detail?.icon));
 
-        // Livewire v3 Events
-        document.addEventListener('livewire:navigating', () => start('Navegando...'));
+        // Livewire Navigation (SPA Feel)
+        document.addEventListener('livewire:navigating', () => start('Carregando próxima tela...'));
         document.addEventListener('livewire:navigated', stop);
 
-        $watch('loading', v => { if (v) setTimeout(() => { if (this.loading) stop(); }, 30000); });
+        // Safety Timeout
+        $watch('loading', v => { if (v) setTimeout(() => { if (this.loading) stop(); }, 15000); });
+
         stop();
     }
 }"
@@ -39,7 +41,7 @@
     x-cloak
     role="alert"
     aria-busy="true"
-    class="fixed inset-0 z-[9999] flex items-center justify-center bg-white/80 dark:bg-slate-950/90 backdrop-blur-md font-sans"
+    class="fixed inset-0 z-[9999] flex items-center justify-center bg-white/80 dark:bg-slate-900/90 backdrop-blur-md font-['Poppins'] transition-opacity duration-300"
     x-transition:enter="transition ease-out duration-300"
     x-transition:enter-start="opacity-0"
     x-transition:enter-end="opacity-100"
@@ -55,7 +57,7 @@
             <div class="absolute inset-2 bg-indigo-500/10 rounded-full animate-pulse delay-75"></div>
 
             <!-- Glass Card for Icon -->
-            <div class="absolute inset-0 bg-white dark:bg-slate-900 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-100 dark:border-slate-800 flex items-center justify-center overflow-hidden">
+            <div class="absolute inset-0 bg-white dark:bg-slate-800 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-100 dark:border-slate-700 flex items-center justify-center overflow-hidden">
                 <div class="text-indigo-600 dark:text-indigo-400 text-5xl transform transition-all duration-500">
                    <template x-if="icon === 'book-open-reader'"><x-icon name="book-open-reader" style="duotone" class="fa-beat-fade" /></template>
                    <template x-if="icon === 'chalkboard-user'"><x-icon name="chalkboard-user" style="duotone" class="fa-fade" /></template>
@@ -69,7 +71,7 @@
 
         <!-- Message Box -->
         <div class="flex flex-col items-center gap-3">
-            <h3 x-text="message" class="text-xl font-bold text-slate-800 dark:text-white tracking-wide font-display"></h3>
+            <h3 x-text="message" class="text-xl font-bold text-slate-800 dark:text-white tracking-wide font-['Poppins'] text-center px-4"></h3>
 
             <div class="flex items-center gap-2 mt-2">
                 <span class="w-2 h-2 rounded-full bg-indigo-500 animate-bounce [animation-delay:-0.3s]"></span>
@@ -79,13 +81,26 @@
         </div>
 
         <!-- Subtle Progress Line -->
-        <div class="mt-8 w-64 h-1 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+        <div class="mt-8 w-64 h-1 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
             <div class="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 animate-[loading-bar_2s_ease-in-out_infinite] w-1/3"></div>
         </div>
     </div>
 </div>
 
 <style>
+    @font-face {
+        font-family: 'Poppins';
+        src: url('/resources/fonts/poppins-v24-latin-regular.woff2') format('woff2');
+        font-weight: 400;
+        font-style: normal;
+    }
+    @font-face {
+        font-family: 'Poppins';
+        src: url('/resources/fonts/poppins-v24-latin-700.woff2') format('woff2');
+        font-weight: 700;
+        font-style: normal;
+    }
+
     @keyframes loading-bar {
         0% { transform: translateX(-150%); }
         100% { transform: translateX(350%); }

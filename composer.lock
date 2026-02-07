@@ -5,10 +5,14 @@
         "This file is @generated automatically"
     ],
 <<<<<<< HEAD
+<<<<<<< HEAD
     "content-hash": "143adf71ea7e6922aeca6242d8cc17fa",
 =======
     "content-hash": "aa966045be23a07b9186934b726acff9",
 >>>>>>> origin/jules/planning-module-init-11986219447505815665
+=======
+    "content-hash": "0e8946bfbaf11c0e63bc7ee99a16c23a",
+>>>>>>> origin/classrecord-module-setup-347080406940848607
     "packages": [
         {
             "name": "barryvdh/laravel-dompdf",
@@ -3904,6 +3908,9 @@
         },
         {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/classrecord-module-setup-347080406940848607
             "name": "sabberworm/php-css-parser",
             "version": "v9.1.0",
             "source": {
@@ -3945,6 +3952,7 @@
             "autoload": {
                 "psr-4": {
                     "Sabberworm\\CSS\\": "src/"
+<<<<<<< HEAD
 =======
             "name": "setasign/fpdf",
             "version": "1.8.6",
@@ -4027,6 +4035,8 @@
                 "psr-4": {
                     "setasign\\Fpdi\\": "src/"
 >>>>>>> origin/jules/planning-module-init-11986219447505815665
+=======
+>>>>>>> origin/classrecord-module-setup-347080406940848607
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -4036,6 +4046,9 @@
             "authors": [
                 {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/classrecord-module-setup-347080406940848607
                     "name": "Raphael Schweikert"
                 },
                 {
@@ -4059,6 +4072,7 @@
                 "source": "https://github.com/MyIntervals/PHP-CSS-Parser/tree/v9.1.0"
             },
             "time": "2025-09-14T07:37:21+00:00"
+<<<<<<< HEAD
 =======
                     "name": "Jan Slabon",
                     "email": "jan.slabon@setasign.com",
@@ -4089,6 +4103,8 @@
             ],
             "time": "2025-08-05T09:57:14+00:00"
 >>>>>>> origin/jules/planning-module-init-11986219447505815665
+=======
+>>>>>>> origin/classrecord-module-setup-347080406940848607
         },
         {
             "name": "spatie/laravel-permission",

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Modules\ClassRecord\Models\SchoolClass;
 use Modules\ClassRecord\Models\Grade;
 use Modules\ClassRecord\Models\CycleClosure;
+use Modules\ClassRecord\Models\Attendance;
 
 class ClassRecordController extends Controller
 {
@@ -96,7 +97,7 @@ class ClassRecordController extends Controller
 
         // Find all grades for this class and cycle that are not locked
         $grades = Grade::whereHas('student', function ($query) use ($classId) {
-            $query->where('school_class_id', $classId);
+            $query->where('class_id', $classId);
         })->where('cycle', $cycle)->whereNull('locked_at')->get();
 
         foreach ($grades as $grade) {
@@ -124,7 +125,7 @@ class ClassRecordController extends Controller
         $cycleAverages = [];
         for ($i = 1; $i <= 4; $i++) {
             $grades = $schoolClass->students->flatMap(function ($student) use ($i) {
-                return $student->grades->where('cycle', $i)->pluck('value');
+                return $student->grades->where('cycle', $i)->pluck('score');
             });
 
             if ($grades->count() > 0) {

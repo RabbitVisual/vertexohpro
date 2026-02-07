@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Autor: Reinan Rodrigues
+ * Empresa: Vertex Solutions LTDA © 2026
+ * Email: r.rodriguesjs@gmail.com
+ */
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,16 +17,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cycle_recoveries', function (Blueprint $table) {
+        Schema::create('students', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
-<<<<<<< HEAD
-            $table->foreignId('school_class_id')->constrained('school_classes')->cascadeOnDelete();
-=======
+            $table->string('name');
             $table->foreignId('class_id')->constrained('classes')->cascadeOnDelete();
->>>>>>> origin/classrecord-module-setup-347080406940848607
-            $table->integer('cycle');
-            $table->decimal('score', 5, 2);
             $table->timestamps();
         });
     }
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cycle_recoveries');
+        Schema::dropIfExists('students');
     }
 };

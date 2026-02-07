@@ -4,16 +4,17 @@ namespace Modules\ClassRecord\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Core\Traits\Auditable;
 
 class Student extends Model
 {
-    use HasFactory;
+    use HasFactory, Auditable;
 
-    protected $fillable = ['school_class_id', 'name', 'number', 'registration_number'];
+    protected $fillable = ['class_id', 'name', 'registration_number'];
 
     public function schoolClass()
     {
-        return $this->belongsTo(SchoolClass::class);
+        return $this->belongsTo(SchoolClass::class, 'class_id');
     }
 
     public function attendances()

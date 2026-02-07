@@ -9,10 +9,10 @@ class Grade extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['school_class_id', 'student_id', 'activity_type', 'value', 'cycle', 'locked_at'];
+    protected $fillable = ['student_id', 'class_id', 'cycle', 'evaluation_number', 'score', 'locked_at'];
 
     protected $casts = [
-        'value' => 'decimal:2',
+        'score' => 'decimal:2',
         'locked_at' => 'datetime',
     ];
 
@@ -23,6 +23,6 @@ class Grade extends Model
 
     public function schoolClass()
     {
-        return $this->belongsTo(SchoolClass::class);
+        return $this->belongsTo(SchoolClass::class, 'class_id');
     }
 }

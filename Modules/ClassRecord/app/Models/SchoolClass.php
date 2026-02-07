@@ -11,6 +11,7 @@ class SchoolClass extends Model
 {
     use HasFactory, Auditable;
 
+    protected $table = 'classes';
     protected $fillable = ['user_id', 'name', 'year', 'subject'];
 
     public function user()
@@ -20,21 +21,21 @@ class SchoolClass extends Model
 
     public function students()
     {
-        return $this->hasMany(Student::class);
+        return $this->hasMany(Student::class, 'class_id');
     }
 
     public function lessonPlans()
     {
-        return $this->hasMany(LessonPlan::class);
-    }
-
-    public function classDiaries()
-    {
-        return $this->hasMany(ClassDiary::class);
+        return $this->hasMany(LessonPlan::class, 'class_id');
     }
 
     public function attendances()
     {
-        return $this->hasMany(Attendance::class);
+        return $this->hasMany(Attendance::class, 'class_id');
+    }
+
+    public function grades()
+    {
+        return $this->hasMany(Grade::class, 'class_id');
     }
 }
