@@ -30,6 +30,7 @@ class User extends Authenticatable
         'photo',
         'membership',
         'status',
+        'theme',
         'password',
         'last_login_at',
         'last_login_ip',

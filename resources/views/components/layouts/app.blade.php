@@ -1,17 +1,31 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
       x-data="{
-          darkMode: localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+          darkMode: localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
+          syncTheme(val) {
+              const theme = val ? 'dark' : 'light';
+              localStorage.setItem('theme', theme);
+              if (val) {
+                  document.documentElement.classList.add('dark');
+              } else {
+                  document.documentElement.classList.remove('dark');
+              }
+
+              // Sync with backend if user is authenticated
+              @auth
+                  fetch('{{ route('theme.update') }}', {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json',
+                          'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content
+                      },
+                      body: JSON.stringify({ theme: theme })
+                  }).catch(console.error);
+              @endauth
+          }
       }"
       :class="{ 'dark': darkMode }"
-      x-init="$watch('darkMode', val => {
-          localStorage.setItem('theme', val ? 'dark' : 'light');
-          if (val) {
-              document.documentElement.classList.add('dark');
-          } else {
-              document.documentElement.classList.remove('dark');
-          }
-      })"
+      x-init="$watch('darkMode', val => syncTheme(val))"
 >
 <head>
     <meta charset="utf-8">
@@ -37,6 +51,9 @@
 
     <!-- Main Content -->
     {{ $slot }}
+
+    <!-- Command Center (CMD+K) -->
+    <x-core::command-palette />
 
 </body>
 </html>
