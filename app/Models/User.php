@@ -6,7 +6,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasRoles;
 use Modules\Core\Traits\Auditable;
@@ -31,6 +30,7 @@ class User extends Authenticatable
         'photo',
         'membership',
         'status',
+        'theme',
         'password',
         'last_login_at',
         'last_login_ip',

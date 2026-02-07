@@ -5,7 +5,8 @@ namespace Modules\Planning\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Core\Traits\Auditable;
-use Modules\Planning\Database\Factories\LessonPlanFactory;
+use Modules\ClassRecord\Models\SchoolClass;
+use Modules\ClassRecord\Models\ClassDiary;
 
 class LessonPlan extends Model
 {
@@ -13,9 +14,10 @@ class LessonPlan extends Model
 
     protected $fillable = [
         'user_id',
+        'school_class_id',
         'title',
-        'template_type',
         'content',
+        'template_type',
         'bncc_codes',
     ];
 
@@ -27,5 +29,15 @@ class LessonPlan extends Model
     public function user()
     {
         return $this->belongsTo(\App\Models\User::class);
+    }
+
+    public function schoolClass()
+    {
+        return $this->belongsTo(SchoolClass::class);
+    }
+
+    public function classDiaries()
+    {
+        return $this->hasMany(ClassDiary::class);
     }
 }
