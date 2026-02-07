@@ -28,3 +28,6 @@ use Modules\TeacherPanel\Http\Controllers\NotificationsController;
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('teacherpanel/notifications/check', [NotificationsController::class, 'check'])->name('teacherpanel.notifications.check');
 });
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::post('teacherpanel/notes', [TeacherPanelController::class, 'updateNotes'])->name('teacherpanel.update_notes');
+});

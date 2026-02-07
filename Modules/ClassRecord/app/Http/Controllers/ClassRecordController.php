@@ -4,10 +4,15 @@ namespace Modules\ClassRecord\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+<<<<<<< HEAD
 use Modules\ClassRecord\Models\SchoolClass;
 use Modules\ClassRecord\Models\Grade;
 use Modules\ClassRecord\Models\CycleClosure;
 use Modules\ClassRecord\Models\Attendance;
+=======
+use Modules\ClassRecord\Models\Student;
+use Modules\ClassRecord\Jobs\SendReportCardJob;
+>>>>>>> origin/feature/teacher-panel-widgets-12290637904403310292
 
 class ClassRecordController extends Controller
 {
@@ -116,6 +121,7 @@ class ClassRecordController extends Controller
     /**
      * Display the class overview with charts.
      */
+<<<<<<< HEAD
     public function overview($classId)
     {
         $schoolClass = SchoolClass::with('students.grades')->findOrFail($classId);
@@ -139,5 +145,17 @@ class ClassRecordController extends Controller
             'schoolClass' => $schoolClass,
             'cycleAverages' => $cycleAverages,
         ]);
+=======
+    public function destroy($id) {}
+
+    /**
+     * Send report card via email.
+     */
+    public function emailReportCard(Student $student)
+    {
+        SendReportCardJob::dispatch($student);
+
+        return back()->with('success', 'Boletim enviado para processamento!');
+>>>>>>> origin/feature/teacher-panel-widgets-12290637904403310292
     }
 }

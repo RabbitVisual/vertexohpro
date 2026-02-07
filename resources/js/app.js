@@ -4,6 +4,12 @@ import './auth-forms';
 import './masks';
 import './cep-lookup';
 
+import Sortable from 'sortablejs';
+window.Sortable = Sortable;
+
+import Chart from 'chart.js/auto';
+window.Chart = Chart;
+
 import Alpine from 'alpinejs';
 import trap from '@alpinejs/trap';
 import focus from '@alpinejs/focus';

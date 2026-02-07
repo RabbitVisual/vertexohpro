@@ -28,7 +28,12 @@ class TeacherPanelController extends Controller
             'agenda-aulas',
             'atalhos-bncc',
             'marketplace-trends',
+<<<<<<< HEAD
             'alunos-em-risco'
+=======
+            'alunos-em-risco',
+            'notas-rapidas'
+>>>>>>> origin/feature/teacher-panel-widgets-12290637904403310292
         ];
 
         $widgets = $settings ? $settings->widget_order : $defaultWidgets;
@@ -38,7 +43,13 @@ class TeacherPanelController extends Controller
              $widgets = $defaultWidgets;
         }
 
+<<<<<<< HEAD
         return view('teacherpanel::index', compact('widgets'));
+=======
+        $notes = $settings ? $settings->notes : '';
+
+        return view('teacherpanel::index', compact('widgets', 'notes'));
+>>>>>>> origin/feature/teacher-panel-widgets-12290637904403310292
     }
 
     /**
@@ -51,7 +62,12 @@ class TeacherPanelController extends Controller
             'agenda-aulas',
             'atalhos-bncc',
             'marketplace-trends',
+<<<<<<< HEAD
             'alunos-em-risco'
+=======
+            'alunos-em-risco',
+            'notas-rapidas'
+>>>>>>> origin/feature/teacher-panel-widgets-12290637904403310292
         ];
 
         $request->validate([
@@ -68,6 +84,39 @@ class TeacherPanelController extends Controller
             'message' => 'Configurações salvas com sucesso!',
             'settings' => $settings
         ]);
+<<<<<<< HEAD
+=======
+    }
+
+    /**
+     * Update quick notes.
+     */
+    public function updateNotes(Request $request)
+    {
+        $request->validate([
+            'notes' => 'nullable|string',
+        ]);
+
+        // Get current settings or create
+        $settings = TeacherPanelSetting::firstOrCreate(
+            ['user_id' => Auth::id()],
+            ['widget_order' => [
+                'resumo-frequencia',
+                'agenda-aulas',
+                'atalhos-bncc',
+                'marketplace-trends',
+                'alunos-em-risco',
+                'notas-rapidas'
+            ]]
+        );
+
+        $settings->notes = $request->notes;
+        $settings->save();
+
+        return response()->json([
+            'message' => 'Notas salvas com sucesso!',
+        ]);
+>>>>>>> origin/feature/teacher-panel-widgets-12290637904403310292
     }
 
     /**

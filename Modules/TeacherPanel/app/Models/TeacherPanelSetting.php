@@ -18,7 +18,7 @@ class TeacherPanelSetting extends Model
     /**
      * The attributes that are mass assignable.
      */
-    protected $fillable = ['user_id', 'widget_order'];
+    protected $fillable = ['user_id', 'widget_order', 'notes'];
 
     /**
      * The attributes that should be cast.
