@@ -33,6 +33,9 @@ class UserFactory extends Factory
             'cpf' => fake()->numerify('###########'), // Assuming 11 digits
             'phone' => fake()->phoneNumber(),
             'birth_date' => fake()->date(),
+            'status' => 'active',
+            'membership' => 'free',
+            'theme' => 'light',
         ];
     }
 

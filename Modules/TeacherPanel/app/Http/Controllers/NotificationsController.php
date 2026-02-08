@@ -43,7 +43,7 @@ class NotificationsController extends Controller
         // Check if last_check is older than 10 seconds to avoid spamming on init
         if ($lastCheck && (time() - strtotime($lastCheck) > 5) && rand(1, 100) > 80) {
              $notifications[] = [
-                'id' => 'sale-' . time(),
+                'id' => 'sale-' . time() . '-' . uniqid(),
                 'type' => 'marketplace',
                 'title' => 'Venda Realizada!',
                 'message' => "Nova venda: 'Plano de Aula - Sistema Solar'",

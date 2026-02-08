@@ -1,19 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
-      x-data="{
-          darkMode: localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
-          sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true'
-      }"
-      :class="{ 'dark': darkMode }"
-      x-init="$watch('darkMode', val => {
-          localStorage.setItem('theme', val ? 'dark' : 'light');
-          if (val) {
-              document.documentElement.classList.add('dark');
-          } else {
-              document.documentElement.classList.remove('dark');
-          }
-      }); $watch('sidebarCollapsed', val => localStorage.setItem('sidebarCollapsed', val))"
->
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -32,8 +18,31 @@
 
     <!-- Fonts & Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('head')
+    @stack('styles')
 </head>
-<body class="font-sans text-gray-900 bg-slate-100 dark:bg-slate-950 antialiased overflow-x-hidden">
+<body class="font-sans text-text bg-background antialiased overflow-x-hidden transition-colors duration-500"
+      x-data="{
+          darkMode: localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
+          sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true'
+      }"
+      :class="{ 'dark': darkMode }"
+      x-init="
+          $nextTick(() => {
+              if (darkMode) document.documentElement.classList.add('dark');
+              else document.documentElement.classList.remove('dark');
+          });
+          $watch('darkMode', val => {
+              localStorage.setItem('theme', val ? 'dark' : 'light');
+              if (val) {
+                  document.documentElement.classList.add('dark');
+              } else {
+                  document.documentElement.classList.remove('dark');
+              }
+          });
+          $watch('sidebarCollapsed', val => localStorage.setItem('sidebarCollapsed', val))
+      "
+>
 
     <div class="flex min-h-screen">
         <!-- Sidebar -->
@@ -54,5 +63,6 @@
     <x-loading-overlay />
     <x-toast />
 
+    @stack('scripts')
 </body>
 </html>

@@ -59,12 +59,12 @@
             <!-- Glass Card for Icon -->
             <div class="absolute inset-0 bg-white dark:bg-slate-800 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-100 dark:border-slate-700 flex items-center justify-center overflow-hidden">
                 <div class="text-indigo-600 dark:text-indigo-400 text-5xl transform transition-all duration-500">
-                   <template x-if="icon === 'book-open-reader'"><x-icon name="book-open-reader" style="duotone" class="fa-beat-fade" /></template>
-                   <template x-if="icon === 'chalkboard-user'"><x-icon name="chalkboard-user" style="duotone" class="fa-fade" /></template>
-                   <template x-if="icon === 'graduation-cap'"><x-icon name="graduation-cap" style="duotone" class="fa-bounce" /></template>
-                   <template x-if="icon === 'school'"><x-icon name="school" style="duotone" class="fa-beat" /></template>
-                   <template x-if="icon === 'laptop-code'"><x-icon name="laptop-code" style="duotone" class="fa-pulse" /></template>
-                   <template x-if="icon === 'pencil-paintbrush'"><x-icon name="pencil-paintbrush" style="duotone" class="fa-shake" /></template>
+                   <template x-if="icon === 'book-open-reader'"><x-icon name="book-open-reader" style="solid" class="fa-beat-fade" /></template>
+                   <template x-if="icon === 'chalkboard-user'"><x-icon name="chalkboard-user" style="solid" class="fa-fade" /></template>
+                   <template x-if="icon === 'graduation-cap'"><x-icon name="graduation-cap" style="solid" class="fa-bounce" /></template>
+                   <template x-if="icon === 'school'"><x-icon name="school" style="solid" class="fa-beat" /></template>
+                   <template x-if="icon === 'laptop-code'"><x-icon name="laptop-code" style="solid" class="fa-pulse" /></template>
+                   <template x-if="icon === 'pencil-paintbrush'"><x-icon name="pencil-paintbrush" style="solid" class="fa-shake" /></template>
                 </div>
             </div>
         </div>
@@ -90,13 +90,13 @@
 <style>
     @font-face {
         font-family: 'Poppins';
-        src: url('/resources/fonts/poppins-v24-latin-regular.woff2') format('woff2');
+        src: url('/fonts/poppins-v24-latin-regular.woff2') format('woff2');
         font-weight: 400;
         font-style: normal;
     }
     @font-face {
         font-family: 'Poppins';
-        src: url('/resources/fonts/poppins-v24-latin-700.woff2') format('woff2');
+        src: url('/fonts/poppins-v24-latin-700.woff2') format('woff2');
         font-weight: 700;
         font-style: normal;
     }

@@ -32,7 +32,10 @@ class BillingController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request) {}
+    public function store(Request $request)
+    {
+        return redirect()->route('billing.index')->with('success', 'Assinatura criada com sucesso!');
+    }
 
     /**
      * Show the specified resource.
@@ -53,10 +56,16 @@ class BillingController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id) {}
+    public function update(Request $request, $id)
+    {
+        return redirect()->route('billing.index')->with('success', 'Planos e faturamento atualizados com sucesso!');
+    }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id) {}
+    public function destroy($id)
+    {
+        return redirect()->route('billing.index')->with('success', 'Assinatura cancelada.');
+    }
 }

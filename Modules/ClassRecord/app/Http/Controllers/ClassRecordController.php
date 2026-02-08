@@ -30,16 +30,20 @@ class ClassRecordController extends Controller
             'name' => 'required|string|max:255',
             'subject' => 'required|string|max:255',
             'year' => 'required|string|max:50',
+            'grade' => 'required|string|max:50',
+            'is_multigrade' => 'nullable|boolean',
         ]);
 
         $class = SchoolClass::create([
             'name' => $validated['name'],
             'subject' => $validated['subject'],
             'year' => $validated['year'],
+            'grade' => $validated['grade'],
+            'is_multigrade' => $validated['is_multigrade'] ?? false,
             'user_id' => auth()->id(),
         ]);
 
-        return redirect()->route('classrecords.index')->with('success', 'Class created successfully.');
+        return redirect()->route('classrecords.index')->with('success', 'Turma criada com sucesso.');
     }
 
     public function show($id)
@@ -65,11 +69,19 @@ class ClassRecordController extends Controller
             'name' => 'required|string|max:255',
             'subject' => 'required|string|max:255',
             'year' => 'required|string|max:50',
+            'grade' => 'required|string|max:50',
+            'is_multigrade' => 'nullable|boolean',
         ]);
 
-        $class->update($validated);
+        $class->update([
+            'name' => $validated['name'],
+            'subject' => $validated['subject'],
+            'year' => $validated['year'],
+            'grade' => $validated['grade'],
+            'is_multigrade' => $validated['is_multigrade'] ?? false,
+        ]);
 
-        return redirect()->route('classrecords.index')->with('success', 'Class updated successfully.');
+        return redirect()->route('classrecords.index')->with('success', 'Turma atualizada com sucesso.');
     }
 
     public function destroy($id)

@@ -59,4 +59,44 @@ class VertexHomePageController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy($id) {}
+
+    /**
+     * Show the Terms of Service page.
+     */
+    public function terms()
+    {
+        return view('vertexhomepage::legal.terms');
+    }
+
+    /**
+     * Show the Privacy Policy page.
+     */
+    public function privacy()
+    {
+        return view('vertexhomepage::legal.privacy');
+    }
+
+    /**
+     * Show the contact page.
+     */
+    public function contact()
+    {
+        return view('vertexhomepage::contact');
+    }
+
+    /**
+     * Show the about page.
+     */
+    public function about()
+    {
+        return view('vertexhomepage::about');
+    }
+
+    /**
+     * Show the FAQ page.
+     */
+    public function faq()
+    {
+        return view('vertexhomepage::faq');
+    }
 }

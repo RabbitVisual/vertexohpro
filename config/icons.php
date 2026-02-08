@@ -51,6 +51,16 @@ return [
     'comment' => 'fa-duotone fa-comment',
     'graduation-cap' => 'fa-duotone fa-graduation-cap',
     'chalkboard-user' => 'fa-duotone fa-chalkboard-user',
+    'sun' => 'fa-duotone fa-sun',
+    'moon' => 'fa-duotone fa-moon',
+    'calendar-days' => 'fa-duotone fa-calendar-days',
+    'cart-shopping' => 'fa-duotone fa-cart-shopping',
+    'book-open-reader' => 'fa-duotone fa-book-open-reader',
+    'laptop-code' => 'fa-duotone fa-laptop-code',
+    'pencil-paintbrush' => 'fa-duotone fa-pencil-paintbrush',
+    'gear' => 'fa-duotone fa-gear',
+    'arrow-right-from-bracket' => 'fa-duotone fa-arrow-right-from-bracket',
+    'bars' => 'fa-duotone fa-bars',
 
     'modules' => [
         'core' => ['icon' => 'house', 'label' => 'Dashboard', 'roles' => ['*']],

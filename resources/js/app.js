@@ -1,5 +1,6 @@
 import './bootstrap';
 import './theme';
+import './masks';
 
 import Sortable from 'sortablejs';
 window.Sortable = Sortable;
@@ -12,11 +13,15 @@ window.IMask = IMask;
 
 import Alpine from 'alpinejs';
 import focus from '@alpinejs/focus';
+import collapse from '@alpinejs/collapse';
 
-Alpine.plugin(focus);
-
-window.Alpine = Alpine;
-Alpine.start();
+// Alpine Initialization
+if (!window.Alpine) {
+    window.Alpine = Alpine;
+    Alpine.plugin(focus);
+    Alpine.plugin(collapse);
+    Alpine.start();
+}
 
 // Global Toast Helper
 window.toast = (message, type = 'success') => {

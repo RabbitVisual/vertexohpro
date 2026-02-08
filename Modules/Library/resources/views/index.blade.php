@@ -1,5 +1,5 @@
-<x-core::layouts.master title="Marketplace de Materiais">
-    <div class="flex h-screen overflow-hidden bg-slate-950 text-slate-100">
+<x-teacherpanel::layouts.master title="Vitrine Oh Pro">
+    <div class="flex h-[calc(100vh-64px)] overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
         <!-- Sidebar Filters -->
         <aside class="w-72 bg-slate-900/50 border-r border-slate-800 flex flex-col overflow-y-auto hidden md:flex">
             <div class="p-6">
@@ -200,4 +200,4 @@
             @endif
         </main>
     </div>
-</x-core::layouts.master>
+</x-teacherpanel::layouts.master>

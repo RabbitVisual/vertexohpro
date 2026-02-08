@@ -10,12 +10,15 @@ class TicketMessage extends Model
 {
     use HasFactory;
 
+    protected $table = 'support_messages';
+
     protected $fillable = [
         'ticket_id',
         'user_id',
         'message',
+        'attachment_path',
+        'is_admin',
     ];
-    protected $fillable = ['ticket_id', 'user_id', 'content'];
 
     public function ticket()
     {
@@ -25,6 +28,5 @@ class TicketMessage extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
-        return $this->belongsTo(\App\Models\User::class);
     }
 }

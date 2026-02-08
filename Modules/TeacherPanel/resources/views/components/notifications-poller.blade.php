@@ -62,6 +62,10 @@
                 },
 
                 push(note) {
+                    // Prevent duplicates
+                    if (this.queue.some(n => n.id === note.id)) {
+                        return;
+                    }
                     this.queue.push(note);
                     // Auto dismiss after 5 seconds
                     setTimeout(() => {

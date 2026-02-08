@@ -1,5 +1,5 @@
-<x-core::layouts.master title="Criar Plano de Aula">
-    <div x-data="lessonPlanEditor()" x-init="restoreDraft()" class="min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row relative">
+<x-teacherpanel::layouts.master title="Criar Plano de Aula">
+    <div x-data="lessonPlanEditor()" x-init="restoreDraft()" class="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col md:flex-row relative">
 
         <!-- Draft Notification -->
         <div x-show="hasDraft" x-transition class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-indigo-600 text-white px-6 py-3 rounded-lg shadow-xl flex items-center gap-4">
@@ -14,7 +14,7 @@
         <div class="flex-1 p-6 md:p-8 overflow-y-auto">
             <header class="mb-8 flex justify-between items-center">
                 <div>
-                    <h1 class="text-3xl font-bold text-white font-poppins mb-2">Novo Plano de Aula</h1>
+                    <h1 class="text-3xl font-bold text-slate-800 dark:text-white font-poppins mb-2">Novo Plano de Aula</h1>
                     <p class="text-slate-400">Desenvolva sua aula com assistência da BNCC.</p>
                     <span x-show="lastSaved" class="text-xs text-emerald-400 mt-1 block">
                         <i class="fa-duotone fa-check-circle"></i> Salvo em: <span x-text="lastSaved"></span>
@@ -277,7 +277,7 @@
                         const el = document.getElementById('editor-' + id);
                         if (!el || this.quillInstances[id]) return;
 
-                        const quill = new Quill(el, {
+                        const quill = new Quill('#editor-' + id, {
                             theme: 'snow',
                             placeholder: 'Escreva aqui...',
                             modules: {
@@ -422,4 +422,4 @@
         .ql-picker { color: #94a3b8 !important; }
     </style>
     @endpush
-</x-core::layouts.master>
+</x-teacherpanel::layouts.master>

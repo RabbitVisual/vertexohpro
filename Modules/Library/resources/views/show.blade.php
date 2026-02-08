@@ -1,269 +1,176 @@
-<x-core::layouts.master :title="$material->title">
-    <div class="min-h-screen bg-slate-950 text-slate-100 pb-20">
-        <!-- Breadcrumb & Header -->
-        <div class="bg-slate-900 border-b border-slate-800">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <nav class="flex mb-4 text-sm text-slate-400">
-                    <a href="{{ route('library.index') }}" class="hover:text-indigo-400 transition-colors">Marketplace</a>
-                    <span class="mx-2">/</span>
-                    <span class="text-slate-200 truncate">{{ $material->title }}</span>
-                </nav>
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <h1 class="text-3xl md:text-4xl font-bold text-white tracking-tight">{{ $material->title }}</h1>
-                    <div class="flex items-center gap-3">
-                         @if($material->price > 0)
-                            <span class="bg-indigo-600/20 text-indigo-400 border border-indigo-600/30 px-4 py-1.5 rounded-full text-lg font-bold">
-                                R$ {{ number_format($material->price, 2, ',', '.') }}
-                            </span>
-                        @else
-                            <span class="bg-emerald-600/20 text-emerald-400 border border-emerald-600/30 px-4 py-1.5 rounded-full text-lg font-bold">
-                                GRÁTIS
-                            </span>
-                        @endif
-                    </div>
-                </div>
-            </div>
+<x-teacherpanel::layouts.master title="{{ $resource->title }}">
+    <div class="p-6 max-w-7xl mx-auto space-y-8">
+        <!-- Breadcrumb & Back -->
+        <div class="flex items-center gap-4">
+            <a href="{{ route('library.index') }}" class="p-2.5 text-slate-400 hover:text-indigo-500 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 transition shadow-sm">
+                <x-icon name="arrow-left" style="solid" class="w-4 h-4" />
+            </a>
+            <nav class="flex" aria-label="Breadcrumb">
+                <ol class="flex items-center space-x-2 text-xs text-slate-400">
+                    <li><a href="{{ route('library.index') }}" class="hover:text-indigo-500 transition-colors">Biblioteca</a></li>
+                    <li><x-icon name="chevron-right" style="solid" class="w-2 h-2" /></li>
+                    <li class="text-slate-500 font-medium truncate max-w-[200px]">{{ $resource->title }}</li>
+                </ol>
+            </nav>
         </div>
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                <!-- Left Column: Preview -->
-                <div class="lg:col-span-2 space-y-8">
-                    <!-- File Preview Card -->
-                    <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl relative group">
-                        <div class="aspect-video bg-slate-800 flex items-center justify-center relative overflow-hidden">
-                             <!-- Abstract Background -->
-                            <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')] opacity-20"></div>
-
-                            @php
-                                $ext = strtolower(pathinfo($material->file_path, PATHINFO_EXTENSION));
-                                $icon = match($ext) {
-                                    'pdf' => 'file-pdf',
-                                    'doc', 'docx' => 'file-word',
-                                    'zip', 'rar' => 'file-zipper',
-                                    default => 'file',
-                                };
-                            @endphp
-
-                            <x-icon name="{{ $icon }}" class="w-32 h-32 text-slate-700 group-hover:scale-110 transition-transform duration-500" />
-
-                            <div class="absolute bottom-4 right-4 bg-black/50 backdrop-blur px-3 py-1 rounded text-xs font-mono text-slate-300 border border-white/10">
-                                PREVIEW
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left: Content & Details -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Main Info Card -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                    <!-- Hero/Preview Image -->
+                    <div class="aspect-video w-full bg-slate-100 dark:bg-slate-800 relative overflow-hidden">
+                        @if($resource->preview_image_path)
+                            <img src="{{ Storage::url($resource->preview_image_path) }}" alt="{{ $resource->title }}" class="w-full h-full object-cover">
+                        @else
+                            <div class="w-full h-full flex flex-col items-center justify-center text-slate-300 dark:text-slate-700">
+                                <x-icon name="image" style="solid" class="w-16 h-16 mb-4" />
+                                <p class="text-sm font-bold uppercase tracking-widest">Visualização indisponível</p>
                             </div>
+                        @endif
+
+                        <!-- Badges -->
+                        <div class="absolute top-4 left-4 flex gap-2">
+                            <span class="bg-white/90 dark:bg-slate-900/90 backdrop-blur px-3 py-1 rounded-lg text-[10px] font-bold text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800/50 shadow-sm">
+                                {{ $resource->subject ?? 'Geral' }}
+                            </span>
                         </div>
                     </div>
 
-                    <!-- Description -->
-                    <div class="prose prose-invert prose-lg max-w-none">
-                        <h3 class="text-xl font-bold text-white mb-4">Sobre este material</h3>
-                        <p class="text-slate-300 leading-relaxed whitespace-pre-line">{{ $material->description }}</p>
-                    </div>
+                    <div class="p-8">
+                        <h1 class="text-3xl font-bold text-slate-800 dark:text-white tracking-tight mb-4">{{ $resource->title }}</h1>
 
-                    <!-- BNCC Codes -->
-                    @if(!empty($material->bncc_codes))
-                        <div class="bg-slate-900/50 rounded-xl p-6 border border-slate-800">
-                            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                                <x-icon name="graduation-cap" class="w-5 h-5 text-indigo-400" />
-                                Habilidades BNCC Trabalhadas
-                            </h3>
-                            <div class="flex flex-wrap gap-2">
-                                @foreach($material->bncc_codes as $code)
-                                    <span class="px-3 py-1 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-lg text-sm font-bold font-mono" title="Pesquisar esta habilidade">
-                                        {{ $code }}
-                                    </span>
-                                @endforeach
+                        <div class="flex items-center gap-4 mb-8">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-bold text-slate-500">
+                                    {{ substr($resource->author->name ?? 'A', 0, 1) }}
+                                </div>
+                                <span class="text-sm font-medium text-slate-600 dark:text-slate-400">{{ $resource->author->name ?? 'Autor Independente' }}</span>
                             </div>
+                            <div class="h-4 w-px bg-slate-200 dark:bg-slate-800"></div>
+                            <div class="flex items-center gap-1 text-amber-500">
+                                <x-icon name="star" style="solid" class="w-3.5 h-3.5" />
+                                <span class="text-sm font-bold">4.9</span>
+                                <span class="text-xs text-slate-400 font-normal">(128 avaliações)</span>
+                            </div>
+                        </div>
+
+                        <div class="prose dark:prose-invert max-w-none text-slate-600 dark:text-slate-400 leading-relaxed">
+                            {!! $resource->description !!}
+                        </div>
+
+                        <!-- Tags -->
+                        <div class="mt-8 pt-8 border-t border-slate-100 dark:border-slate-800 flex flex-wrap gap-2">
+                            @foreach($resource->tags ?? [] as $tag)
+                                <span class="bg-slate-50 dark:bg-slate-800 px-3 py-1 rounded-lg text-xs font-medium text-slate-500 dark:text-slate-400 border border-slate-100 dark:border-slate-700">
+                                    #{{ $tag }}
+                                </span>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reviews Section -->
+                <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm p-8">
+                    <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-6">O que os professores dizem</h3>
+                    <div class="space-y-6">
+                        @for($i=0; $i<2; $i++)
+                            <div class="flex gap-4">
+                                <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex-shrink-0"></div>
+                                <div class="space-y-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-sm font-bold text-slate-800 dark:text-white">Prof. Silva</span>
+                                        <div class="flex text-amber-500 scale-75 transform origin-left">
+                                            <x-icon name="star" style="solid" class="w-3" />
+                                            <x-icon name="star" style="solid" class="w-3" />
+                                            <x-icon name="star" style="solid" class="w-3" />
+                                            <x-icon name="star" style="solid" class="w-3" />
+                                            <x-icon name="star" style="solid" class="w-3" />
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">Material excelente! Me ajudou muito a organizar o conteúdo de Geografia do 6º ano.</p>
+                                </div>
+                            </div>
+                        @endfor
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Buy/Download Card -->
+            <div class="space-y-6">
+                <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl p-8 sticky top-6">
+                    @if($resource->price > 0)
+                        <div class="mb-6">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Preço do Material</p>
+                            <div class="flex items-baseline gap-2">
+                                <span class="text-sm font-bold text-slate-500">R$</span>
+                                <span class="text-4xl font-black text-slate-900 dark:text-white tracking-tighter">{{ number_format($resource->price, 2, ',', '.') }}</span>
+                            </div>
+                        </div>
+                    @else
+                        <div class="mb-6">
+                            <span class="inline-flex px-3 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-lg text-xs font-bold uppercase tracking-widest">Grátis</span>
                         </div>
                     @endif
 
-                    <!-- Ratings Section -->
-                    <div class="pt-8 border-t border-slate-800">
-                        <h3 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-                            Avaliações
-                            <span class="text-sm font-normal text-slate-500 bg-slate-800 px-2 py-0.5 rounded-full ml-2">{{ $material->ratings->count() }}</span>
-                        </h3>
+                    @if($hasAccess)
+                        <div class="space-y-4">
+                            <div class="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800/50 flex flex-col items-center text-center">
+                                <x-icon name="circle-check" style="solid" class="w-8 h-8 text-indigo-500 mb-2" />
+                                <p class="text-xs font-bold text-indigo-900 dark:text-indigo-100">Você possui acesso!</p>
+                                <p class="text-[10px] text-indigo-700 dark:text-indigo-300/80">Este material faz parte da sua biblioteca.</p>
+                            </div>
+                            <a href="{{ route('library.download', $resource->id) }}" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-lg shadow-indigo-900/20 transition-all active:scale-95">
+                                <x-icon name="download" style="solid" class="w-5 h-5" />
+                                Baixar Agora (PDF)
+                            </a>
+                        </div>
+                    @else
+                        <button class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-lg shadow-indigo-900/20 transition-all active:scale-95 mb-4">
+                            <x-icon name="cart-shopping" style="solid" class="w-5 h-5" />
+                            Adquirir Material
+                        </button>
+                    @endif
 
-                        @forelse($material->ratings as $rating)
-                            <div class="bg-slate-900 rounded-xl p-6 mb-4 border border-slate-800">
-                                <div class="flex items-start justify-between mb-4">
-                                    <div class="flex items-center gap-3">
-                                        <img src="{{ $rating->user->photo_url }}" alt="{{ $rating->user->first_name }}" class="w-10 h-10 rounded-full object-cover">
-                                        <div>
-                                            <div class="font-bold text-white text-sm">{{ $rating->user->full_name }}</div>
-                                            <div class="text-xs text-slate-500">{{ $rating->created_at->diffForHumans() }}</div>
-                                        </div>
-                                    </div>
-                                    <div class="flex gap-0.5">
-                                        @for($i = 1; $i <= 5; $i++)
-                                            <x-icon name="star" class="w-4 h-4 {{ $i <= $rating->rating ? 'text-amber-400 fill-current' : 'text-slate-700' }}" />
-                                        @endfor
-                                    </div>
-                                </div>
-                                <p class="text-slate-300 text-sm">{{ $rating->comment }}</p>
+                    <div class="mt-8 space-y-4">
+                        <div class="flex items-center gap-3 grayscale opacity-60">
+                            <x-icon name="file-pdf" style="solid" class="w-5 h-5 text-red-500" />
+                            <div>
+                                <p class="text-[10px] font-bold text-slate-800 dark:text-white uppercase">Formato PDF</p>
+                                <p class="text-[9px] text-slate-400">Compatível com todos os dispositivos</p>
                             </div>
-                        @empty
-                            <div class="text-center py-8 bg-slate-900/50 rounded-xl border border-slate-800 border-dashed">
-                                <p class="text-slate-400">Seja o primeiro a avaliar este material!</p>
+                        </div>
+                        <div class="flex items-center gap-3 grayscale opacity-60">
+                            <x-icon name="shield-check" style="solid" class="w-5 h-5 text-emerald-500" />
+                            <div>
+                                <p class="text-[10px] font-bold text-slate-800 dark:text-white uppercase">Certificado BNCC</p>
+                                <p class="text-[9px] text-slate-400">Alinhado com as competências base</p>
                             </div>
-                        @endforelse
+                        </div>
                     </div>
                 </div>
 
-                <!-- Right Column: Sidebar Actions -->
-                <div class="lg:col-span-1 space-y-6">
-                    <!-- Author Card -->
-                    <div class="bg-slate-900 rounded-xl p-6 border border-slate-800 flex items-center gap-4">
-                        <img src="{{ $material->author->photo_url }}" alt="{{ $material->author->first_name }}" class="w-16 h-16 rounded-full object-cover ring-2 ring-indigo-500/50">
-                        <div>
-                            <div class="text-xs text-slate-400 uppercase tracking-wide font-bold mb-1">Criado por</div>
-                            <div class="text-lg font-bold text-white">{{ $material->author->full_name }}</div>
-                            <div class="text-sm text-slate-500">Membro desde {{ $material->author->created_at->format('Y') }}</div>
-                        </div>
-                    </div>
-
-                    <!-- Purchase / Download Panel -->
-                    <div class="bg-slate-900 rounded-xl p-6 border border-slate-800 shadow-xl sticky top-6" x-data="{ loading: false }">
-                        <div class="mb-6">
-                            <div class="flex items-end justify-between mb-2">
-                                <span class="text-slate-400">Preço</span>
-                                <span class="text-2xl font-bold text-white">
-                                    {{ $material->price > 0 ? 'R$ ' . number_format($material->price, 2, ',', '.') : 'Grátis' }}
-                                </span>
-                            </div>
-                            <div class="flex items-center gap-2 text-sm text-slate-400">
-                                <x-icon name="shield-check" class="w-4 h-4 text-emerald-500" />
-                                Compra Segura via MercadoPago
-                            </div>
-                        </div>
-
-                        @if($hasAccess)
-                            <button
-                                @click="
-                                    loading = true;
-                                    fetch('{{ route('api.materials.link', $material->id) }}')
-                                        .then(res => res.json())
-                                        .then(data => {
-                                            if(data.url) {
-                                                window.location.href = data.url;
-                                                $dispatch('toast', { type: 'success', message: 'Download iniciado com sucesso!' });
-                                                // Reset loading after delay since redirect might be fast or slow (stream)
-                                                setTimeout(() => loading = false, 3000);
-                                            } else {
-                                                $dispatch('toast', { type: 'error', message: 'Erro ao gerar link.' });
-                                                loading = false;
-                                            }
-                                        })
-                                        .catch(() => {
-                                            $dispatch('toast', { type: 'error', message: 'Erro de conexão.' });
-                                            loading = false;
-                                        });
-                                "
-                                class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-emerald-900/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-3"
-                                :class="{ 'opacity-75 cursor-wait': loading }"
-                                :disabled="loading"
-                            >
-                                <span x-show="!loading" class="flex items-center gap-2">
-                                    <x-icon name="download" class="w-6 h-6" />
-                                    BAIXAR AGORA
-                                </span>
-                                <span x-show="loading" class="flex items-center gap-2">
-                                    <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                    Gerando Link...
-                                </span>
-                            </button>
-                            <p class="text-center text-xs text-slate-500 mt-3">Você já possui este material.</p>
-                        @else
-                             <button
-                                @click="
-                                    loading = true;
-                                    fetch('{{ route('api.checkout.preference') }}', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            'Accept': 'application/json',
-                                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                        },
-                                        body: JSON.stringify({ material_id: {{ $material->id }} })
-                                    })
-                                    .then(res => res.json())
-                                    .then(data => {
-                                        if(data.init_point) {
-                                            window.location.href = data.init_point;
-                                        } else if(data.error) {
-                                            $dispatch('toast', { type: 'error', message: data.error });
-                                            loading = false;
-                                        } else {
-                                             $dispatch('toast', { type: 'error', message: 'Erro inesperado.' });
-                                             loading = false;
-                                        }
-                                    })
-                                    .catch(err => {
-                                        console.error(err);
-                                        $dispatch('toast', { type: 'error', message: 'Erro ao iniciar checkout.' });
-                                        loading = false;
-                                    });
-                                "
-                                class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-900/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-3"
-                                :class="{ 'opacity-75 cursor-wait': loading }"
-                                :disabled="loading"
-                            >
-                                <span x-show="!loading" class="flex items-center gap-2">
-                                    <x-icon name="credit-card" class="w-6 h-6" />
-                                    COMPRAR AGORA
-                                </span>
-                                <span x-show="loading" class="flex items-center gap-2">
-                                    <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                    Processando...
-                                </span>
-                            </button>
-                            <p class="text-center text-xs text-slate-500 mt-3">Acesso imediato após confirmação.</p>
-                        @endif
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recommendations -->
-            @if(isset($relatedMaterials) && $relatedMaterials->count() > 0)
-                <div class="mt-20">
-                    <h2 class="text-2xl font-bold text-white mb-8">Professores que baixaram este material também gostaram de...</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Related Materials -->
+                @if($relatedMaterials->count() > 0)
+                    <div class="space-y-4">
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-white px-2">Materiais Recomendados</h4>
                         @foreach($relatedMaterials as $related)
-                            <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden hover:border-indigo-500/50 transition-all duration-300 group flex flex-col h-full">
-                                <div class="p-5 flex flex-col h-full">
-                                    <div class="flex items-center justify-between mb-3">
-                                         @php
-                                            $ext = strtolower(pathinfo($related->file_path, PATHINFO_EXTENSION));
-                                            $icon = match($ext) {
-                                                'pdf' => 'file-pdf',
-                                                'doc', 'docx' => 'file-word',
-                                                'zip', 'rar' => 'file-zipper',
-                                                default => 'file',
-                                            };
-                                        @endphp
-                                        <div class="bg-slate-800 p-2 rounded text-slate-400 group-hover:text-indigo-400 transition-colors">
-                                            <x-icon name="{{ $icon }}" class="w-5 h-5" />
-                                        </div>
-                                        <span class="text-xs font-bold text-slate-500 bg-slate-800 px-2 py-1 rounded">
-                                            {{ $related->price > 0 ? 'R$ ' . number_format($related->price, 2, ',', '.') : 'Grátis' }}
-                                        </span>
-                                    </div>
-                                    <h3 class="text-base font-bold text-white mb-2 leading-tight">
-                                        <a href="{{ route('library.show', $related->id) }}" class="hover:text-indigo-400 transition-colors">
-                                            {{ $related->title }}
-                                        </a>
-                                    </h3>
-                                    <p class="text-xs text-slate-400 line-clamp-2 mb-4 flex-1">
-                                        {{ $related->description }}
-                                    </p>
+                            <a href="{{ route('library.show', $related->id) }}" class="flex items-center gap-4 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:border-indigo-300 transition-all group">
+                                <div class="w-16 h-16 rounded-xl bg-slate-100 dark:bg-slate-800 flex-shrink-0 overflow-hidden">
+                                    @if($related->preview_image_path)
+                                        <img src="{{ Storage::url($related->preview_image_path) }}" alt="" class="w-full h-full object-cover group-hover:scale-110 transition-transform">
+                                    @endif
                                 </div>
-                            </div>
+                                <div class="flex-1 min-w-0">
+                                    <h5 class="text-xs font-bold text-slate-800 dark:text-white truncate group-hover:text-indigo-600">{{ $related->title }}</h5>
+                                    <p class="text-[10px] text-slate-500 mt-1">{{ $related->author->name ?? 'Autor' }}</p>
+                                </div>
+                            </a>
                         @endforeach
                     </div>
-                </div>
-            @endif
+                @endif
+            </div>
         </div>
     </div>
-<x-core::layouts.master title="Library - show">
-    <h1>Library show</h1>
-    <p>Placeholder for show view.</p>
-</x-core::layouts.master>
+</x-teacherpanel::layouts.master>

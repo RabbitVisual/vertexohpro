@@ -102,6 +102,11 @@ class LibraryController extends Controller
         return view('library::my-library', compact('purchased', 'created'));
     }
 
+    public function create()
+    {
+        return view('library::create');
+    }
+
     /**
      * Display the specified resource.
      */
@@ -125,6 +130,80 @@ class LibraryController extends Controller
         }
 
         return view('library::show', compact('resource', 'hasAccess', 'relatedMaterials'));
+    }
+
+    public function edit($id)
+    {
+        $resource = LibraryResource::findOrFail($id);
+
+        if ($resource->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        return view('library::edit', compact('resource'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $resource = LibraryResource::findOrFail($id);
+
+        if ($resource->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'file' => 'nullable|file|mimes:pdf|max:10240',
+            'preview_image' => 'nullable|image|max:2048',
+            'price' => 'required|numeric|min:0',
+            'subject' => 'nullable|string',
+            'tags' => 'nullable|array'
+        ]);
+
+        if ($request->hasFile('file')) {
+            // Delete old file if exists
+            if ($resource->file_path) {
+                Storage::disk('local')->delete($resource->file_path);
+            }
+            $validated['file_path'] = $request->file('file')->store('library/files', 'local');
+        }
+
+        if ($request->hasFile('preview_image')) {
+            // Delete old preview if exists
+            if ($resource->preview_image_path) {
+                Storage::disk('public')->delete($resource->preview_image_path);
+            }
+            $validated['preview_image_path'] = $this->imageOptimizer->optimize(
+                $request->file('preview_image'),
+                'library/previews'
+            );
+        }
+
+        $resource->update($validated);
+
+        return redirect()->route('library.index')->with('success', 'Material atualizado com sucesso!');
+    }
+
+    public function destroy($id)
+    {
+        $resource = LibraryResource::findOrFail($id);
+
+        if ($resource->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        if ($resource->file_path) {
+            Storage::disk('local')->delete($resource->file_path);
+        }
+
+        if ($resource->preview_image_path) {
+            Storage::disk('public')->delete($resource->preview_image_path);
+        }
+
+        $resource->delete();
+
+        return redirect()->route('library.index')->with('success', 'Material removido com sucesso.');
     }
 
     public function store(Request $request)

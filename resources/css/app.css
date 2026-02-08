@@ -20,18 +20,25 @@
 /* Define que o dark mode é ativado pela classe .dark no <html> */
 @custom-variant dark (&:where(.dark, .dark *));
 
+[x-cloak] {
+    display: none !important;
+}
+
 /* Professional Defaults - Enhanced UX */
 @layer base {
     html {
         color-scheme: light;
+        scroll-behavior: smooth;
     }
 
     html.dark {
         color-scheme: dark;
     }
 
-    * {
-        @apply transition-all duration-200 ease-in-out;
+    body {
+        @apply antialiased transition-colors duration-500 ease-in-out;
+        background-color: var(--color-background);
+        color: var(--color-text);
     }
 
     /* Headings default to Poppins */

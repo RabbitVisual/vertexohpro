@@ -3,6 +3,11 @@
 @php
     $iconClass = config('icons.' . $name);
 
+    // Fallback: If not in config, use the name directly
+    if (!$iconClass) {
+        $iconClass = "fa-duotone fa-{$name}";
+    }
+
     if ($iconClass) {
         if ($style !== 'duotone') {
             // Replace fa-duotone with fa-{style}
@@ -18,5 +23,6 @@
 @if($iconClass)
     <i {{ $attributes->merge(['class' => $iconClass]) }}></i>
 @else
-    <i {{ $attributes->merge(['class' => 'fa-duotone fa-circle-question text-slate-300 dark:text-slate-600 opacity-50 cursor-help', 'title' => "Icon not found: $name"]) }}></i>
+    <!-- Safety fallback if name is empty -->
+    <i {{ $attributes->merge(['class' => 'fa-duotone fa-circle-question text-red-500', 'title' => 'Icon name missing']) }}></i>
 @endif

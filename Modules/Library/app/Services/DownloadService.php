@@ -7,7 +7,6 @@ use App\Models\User;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\URL;
 use Modules\Library\Models\LibraryResource;
 
 class DownloadService
@@ -32,14 +31,24 @@ class DownloadService
     /**
      * Generate a signed temporary download URL.
      *
-     * @param Material $material
-     * @param User $user
+     * @param Material|LibraryResource $resource
+     * @param User|null $user
      * @return string
      * @throws \Exception
      */
-    public function getDownloadUrl(Material $material, User $user): string
+    public function getDownloadUrl($resource, User $user = null): string
     {
-        if (!$this->hasPermission($material, $user)) {
+        // If it's a LibraryResource, we use the simpler logic mentioned at the end of the file
+        if ($resource instanceof LibraryResource) {
+            return URL::temporarySignedRoute(
+                'library.stream',
+                now()->addMinutes(10),
+                ['id' => $resource->id]
+            );
+        }
+
+        // For Material, we check permissions
+        if (!$user || !$this->hasPermission($resource, $user)) {
             throw new \Exception("Unauthorized access to material. Please purchase or wait for approval.");
         }
 
@@ -48,7 +57,7 @@ class DownloadService
             'library.materials.download',
             Carbon::now()->addMinutes(30),
             [
-                'material' => $material->id,
+                'material' => $resource->id,
                 'user' => $user->id
             ]
         );
@@ -71,16 +80,5 @@ class DownloadService
 
         // Use Storage::download which streams the file
         return Storage::disk('private')->download($material->file_path, $filename);
-    }
-     * Generate a temporary signed URL for downloading a resource.
-     * The URL expires in 10 minutes.
-     */
-    public function getDownloadUrl(LibraryResource $resource): string
-    {
-        return URL::temporarySignedRoute(
-            'library.stream',
-            now()->addMinutes(10),
-            ['id' => $resource->id]
-        );
     }
 }

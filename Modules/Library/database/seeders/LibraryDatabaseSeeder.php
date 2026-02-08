@@ -25,6 +25,7 @@ class LibraryDatabaseSeeder extends Seeder
 
         foreach ($materials as $title) {
             Material::create([
+                'user_id' => 1,
                 'title' => $title,
                 'downloads_count' => rand(10, 500),
             ]);
